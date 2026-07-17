@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDCB6E"/>
+      <stop offset="100%" stop-color="#F39C12"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="250" rx="16" fill="url(#bg4)"/>
+  <!-- Card grid 3x2 -->
+  <rect x="70"  y="55"  width="70" height="70" rx="12" fill="#fff" opacity="0.9"/>
+  <text x="105" y="100" font-family="Fredoka,sans-serif" font-size="36" text-anchor="middle" fill="#F39C12">?</text>
+  <rect x="165" y="55"  width="70" height="70" rx="12" fill="#6C5CE7"/>
+  <text x="200" y="100" font-family="Fredoka,sans-serif" font-size="32" text-anchor="middle" fill="#fff">★</text>
+  <rect x="260" y="55"  width="70" height="70" rx="12" fill="#fff" opacity="0.9"/>
+  <text x="295" y="100" font-family="Fredoka,sans-serif" font-size="36" text-anchor="middle" fill="#F39C12">?</text>
+  <rect x="70"  y="145" width="70" height="70" rx="12" fill="#6C5CE7"/>
+  <text x="105" y="190" font-family="Fredoka,sans-serif" font-size="32" text-anchor="middle" fill="#fff">★</text>
+  <rect x="165" y="145" width="70" height="70" rx="12" fill="#fff" opacity="0.9"/>
+  <text x="200" y="190" font-family="Fredoka,sans-serif" font-size="36" text-anchor="middle" fill="#F39C12">?</text>
+  <rect x="260" y="145" width="70" height="70" rx="12" fill="#FD79A8"/>
+  <text x="295" y="190" font-family="Fredoka,sans-serif" font-size="32" text-anchor="middle" fill="#fff">♥</text>
+</svg>
