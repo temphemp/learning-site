@@ -58,6 +58,7 @@
   /* Transitions */
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --transition-base: 0.3s var(--ease-bounce);
+  --header-inset: clamp(0.75rem, 2vw, 1.5rem);
 }
 
 /* ---------- Reset & Base ---------- */
@@ -81,6 +82,9 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  overflow-x: hidden;
+  /* Keep scroll position stable while the sticky header changes height. */
+  overflow-anchor: none;
 }
 
 img {
@@ -99,12 +103,36 @@ img {
 /* ---------- Hero / Header ---------- */
 .hero {
   position: relative;
+  z-index: 10;
+  top: var(--header-inset);
+  width: calc(100vw - (2 * var(--header-inset)));
+  margin: var(--header-inset) calc(50% - 50vw + var(--header-inset)) var(--space-2xl);
   text-align: center;
   padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
   overflow: hidden;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  background: var(--gradient-hero);
-  margin-bottom: var(--space-2xl);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: clamp(1.5rem, 4vw, 2.5rem);
+  background: linear-gradient(135deg, rgba(162, 155, 254, 0.88) 0%, rgba(253, 121, 168, 0.86) 50%, rgba(253, 203, 110, 0.88) 100%);
+  box-shadow: 0 8px 28px rgba(88, 75, 170, 0.18);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  transition: padding 0.42s ease, border-radius 0.42s ease, margin-bottom 0.42s ease,
+              box-shadow 0.42s ease, background-color 0.42s ease;
+}
+
+@supports (position: sticky) {
+  .hero {
+    position: sticky;
+  }
+}
+
+.hero.is-collapsed {
+  padding: clamp(0.7rem, 1.6vw, 0.95rem) var(--space-lg);
+  /* A finite radius avoids the delayed, clamped animation of 999px. */
+  border-radius: 2rem;
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 6px 20px rgba(88, 75, 170, 0.2);
 }
 
 .hero-title {
@@ -115,6 +143,13 @@ img {
   text-shadow: 0 2px 8px rgba(0,0,0,0.12);
   position: relative;
   z-index: 2;
+  transition: font-size 0.42s ease, letter-spacing 0.42s ease;
+}
+
+.hero.is-collapsed .hero-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
 }
 
 .hero-subtitle {
@@ -125,6 +160,16 @@ img {
   margin-top: var(--space-sm);
   position: relative;
   z-index: 2;
+  max-height: 4rem;
+  overflow: hidden;
+  transition: max-height 0.32s ease, margin 0.32s ease, opacity 0.22s ease, transform 0.32s ease;
+}
+
+.hero.is-collapsed .hero-subtitle {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
 
 /* Floating bubble decorations */
@@ -133,6 +178,11 @@ img {
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  transition: opacity 0.25s ease;
+}
+
+.hero.is-collapsed .hero-bubbles {
+  opacity: 0;
 }
 
 .bubble {
@@ -245,9 +295,30 @@ img {
     padding: var(--space-2xl) var(--space-md) var(--space-xl);
   }
 
+  .hero.is-collapsed {
+    padding: 0.7rem var(--space-md);
+  }
+
   .card-grid {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero,
+  .hero-title,
+  .hero-subtitle,
+  .hero-bubbles {
+    transition: none;
+  }
+
+  .bubble {
+    animation: none;
   }
 }
 
