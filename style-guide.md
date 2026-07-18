@@ -175,6 +175,19 @@ Use tinted shadows (purple/pink) instead of plain grey for a more colourful feel
 
 ### 8.2 Hero Header
 
+Use the `learning-header` custom element on every page. Set its content with
+the `title` and `subtitle` attributes:
+
+```html
+<learning-header
+  title="Learning Exercises"
+  subtitle="Pick a fun activity and start learning!"
+></learning-header>
+```
+
+The component lives in `components/learning-header.js` and includes the
+collapsible interaction, keyboard controls, and decorative bubbles.
+
 ```
 .hero
 ├── .hero-bubbles           (absolute positioned decorative circles)

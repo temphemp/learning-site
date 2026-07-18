@@ -101,12 +101,30 @@ img {
 }
 
 /* ---------- Hero / Header ---------- */
-.hero {
+learning-header {
   position: relative;
   z-index: 10;
   top: var(--header-inset);
+  display: block;
   width: calc(100vw - (2 * var(--header-inset)));
   margin: var(--header-inset) calc(50% - 50vw + var(--header-inset)) var(--space-2xl);
+  transition: margin-bottom 0.42s ease;
+}
+
+@supports (position: sticky) {
+  learning-header {
+    position: sticky;
+  }
+}
+
+learning-header.is-collapsed {
+  margin-bottom: var(--space-lg);
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  margin: 0;
   text-align: center;
   padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
   overflow: hidden;
@@ -117,21 +135,14 @@ img {
   box-shadow: 0 8px 28px rgba(88, 75, 170, 0.18);
   backdrop-filter: blur(18px) saturate(130%);
   -webkit-backdrop-filter: blur(18px) saturate(130%);
-  transition: padding 0.42s ease, border-radius 0.42s ease, margin-bottom 0.42s ease,
+  transition: padding 0.42s ease, border-radius 0.42s ease,
               box-shadow 0.42s ease, background-color 0.42s ease;
-}
-
-@supports (position: sticky) {
-  .hero {
-    position: sticky;
-  }
 }
 
 .hero.is-collapsed {
   padding: clamp(0.7rem, 1.6vw, 0.95rem) var(--space-lg);
   /* A finite radius avoids the delayed, clamped animation of 999px. */
   border-radius: 2rem;
-  margin-bottom: var(--space-lg);
   box-shadow: 0 6px 20px rgba(88, 75, 170, 0.2);
 }
 

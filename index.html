@@ -11,17 +11,10 @@
     </head>
     <body>
         <div class="page-wrapper">
-            <header class="hero" tabindex="0" role="button" aria-expanded="true" aria-label="Learning Exercises header. Select to expand or collapse.">
-                <div class="hero-bubbles">
-                    <span class="bubble bubble-1"></span>
-                    <span class="bubble bubble-2"></span>
-                    <span class="bubble bubble-3"></span>
-                    <span class="bubble bubble-4"></span>
-                    <span class="bubble bubble-5"></span>
-                </div>
-                <h1 class="hero-title">Learning Exercises</h1>
-                <p class="hero-subtitle">Pick a fun activity and start learning!</p>
-            </header>
+            <learning-header
+                title="Learning Exercises"
+                subtitle="Pick a fun activity and start learning!"
+            ></learning-header>
 
             <main class="card-grid">
                 <article class="exercise-card">
@@ -36,6 +29,7 @@
             </main>
         </div>
 
-        <script src="script.js"></script>
+        <script src="components/learning-header.js" defer></script>
+        <script src="script.js" defer></script>
     </body>
 </html>
