@@ -130,6 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const word = button.closest('.word-item').dataset.word;
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.rate = 0.75;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.voiceURI === 'Google UK English Female' || v.name === 'Google UK English Female');
+      utterance.voice = preferred || voices.find(v => v.lang.startsWith('en-GB')) || null;
       utterance.onend = utterance.onerror = () => button.classList.remove('is-speaking');
 
       button.classList.add('is-speaking');
