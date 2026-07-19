@@ -274,9 +274,12 @@ learning-site/
 ├── style.css
 ├── script.js
 ├── style-guide.md
-└── .images/
-    └── card-img/
-        └── *.svg
+└── static/
+    └── images/
+        └── card-img/
+            └── *.svg
+    └── sounds/
+        └── *.ogg
 ```
 
 ---

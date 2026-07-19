@@ -1,0 +1,59 @@
+{
+  "bands": [
+    {
+      "id": "low",
+      "max": 40,
+      "title": "Keep Going!",
+      "sound": null,
+      "messages": [
+        "Practice makes perfect - keep at it! You'll get better every time you try.",
+        "Every mistake is a chance to learn! Give it another go and see how much you improve.",
+        "You're on your way! A little more practice and you'll be a superstar."
+      ]
+    },
+    {
+      "id": "mid",
+      "max": 55,
+      "title": "Nice Try!",
+      "sound": null,
+      "messages": [
+        "Good job! Keep practicing and you'll score even higher next time!",
+        "You are getting the hang of it! Keep up the hard work and try again.",
+        "Nice try! Keep working at it, and you will master this in no time."
+      ]
+    },
+    {
+      "id": "high",
+      "max": 65,
+      "title": "Great Job!",
+      "sound": "applause",
+      "messages": [
+        "Well done! You are making great progress every time you play.",
+        "Great effort! You are really leveling up your skills.",
+        "Way to go! Keep up this great energy and watch your score grow."
+      ]
+    },
+    {
+      "id": "xhigh",
+      "max": 90,
+      "title": "Awesome Work!",
+      "sound": "success",
+      "messages": [
+        "Awesome job! You are doing incredibly well!",
+        "Fantastic work! You are so close to a perfect score!",
+        "Excellent work! Keep it up, you are doing amazingly well!"
+      ]
+    },
+    {
+      "id": "best",
+      "max": 100,
+      "title": "You Are a Champion!",
+      "sound": "success",
+      "messages": [
+        "Incredible! You are an absolute champion!",
+        "Wow, spectacular job! You completely nailed it!",
+        "Amazing! Your skills are truly outstanding today!"
+      ]
+    }
+  ]
+}
