@@ -133,10 +133,12 @@ learning-header.is-collapsed {
   border-radius: clamp(1.5rem, 4vw, 2.5rem);
   background: linear-gradient(135deg, rgba(162, 155, 254, 0.88) 0%, rgba(253, 121, 168, 0.86) 50%, rgba(253, 203, 110, 0.88) 100%);
   box-shadow: 0 8px 28px rgba(88, 75, 170, 0.18);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  contain: layout style;
+  will-change: padding, box-shadow;
   transition: padding 0.42s ease, border-radius 0.42s ease,
-              box-shadow 0.42s ease, background-color 0.42s ease;
+              box-shadow 0.42s ease;
 }
 
 .hero.is-collapsed {
@@ -154,11 +156,12 @@ learning-header.is-collapsed {
   text-shadow: 0 2px 8px rgba(0,0,0,0.12);
   position: relative;
   z-index: 2;
-  transition: font-size 0.42s ease, letter-spacing 0.42s ease;
+  will-change: transform;
+  transition: transform 0.42s ease;
 }
 
 .hero.is-collapsed .hero-title {
-  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  transform: scale(0.55);
   line-height: 1.2;
   letter-spacing: 0.01em;
 }
@@ -173,6 +176,7 @@ learning-header.is-collapsed {
   z-index: 2;
   max-height: 4rem;
   overflow: hidden;
+  will-change: max-height, opacity, transform;
   transition: max-height 0.32s ease, margin 0.32s ease, opacity 0.22s ease, transform 0.32s ease;
 }
 
@@ -189,6 +193,7 @@ learning-header.is-collapsed {
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  will-change: opacity;
   transition: opacity 0.25s ease;
 }
 
@@ -200,6 +205,8 @@ learning-header.is-collapsed {
   position: absolute;
   border-radius: var(--radius-full);
   background: rgba(255,255,255,0.18);
+  will-change: transform;
+  transform: translateZ(0);
   animation: float 6s ease-in-out infinite;
 }
 
