@@ -1,0 +1,1560 @@
+{
+    "couple": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "two or a few things that are similar or the same, or two or a few people who are in some way connected"
+            },
+            {
+                "pos": "verb",
+                "definition": "to join or combine"
+            }
+        ]
+    },
+    "double": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "twice the size, amount, price, etc., or consisting of two similar things together"
+            },
+            {
+                "pos": "noun",
+                "definition": "a person who looks exactly the same as someone else"
+            },
+            {
+                "pos": "verb",
+                "definition": "to become twice as much or as many, or to make something twice as much or many"
+            },
+            {
+                "pos": "adverb",
+                "definition": "in two parts or layers"
+            }
+        ]
+    },
+    "edible": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "suitable or safe for eating"
+            },
+            {
+                "pos": "noun",
+                "definition": "something you can eat; a food"
+            }
+        ]
+    },
+    "example": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "something that is typical of the group of things that it is a member of"
+            }
+        ]
+    },
+    "humble": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "not proud or not believing that you are important"
+            },
+            {
+                "pos": "verb",
+                "definition": "to make someone understand that they are not as important or special as they thought"
+            }
+        ]
+    },
+    "people": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "men, women, and children"
+            },
+            {
+                "pos": "plural noun",
+                "definition": "men, women, and children generally; pl ofperson"
+            },
+            {
+                "pos": "verb",
+                "definition": "If a place is peopled by a particular type of people, they have moved there or live there"
+            }
+        ]
+    },
+    "poodle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a dog with curly hair that is usually cut short, except on its head, tail, and legs"
+            }
+        ]
+    },
+    "possible": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "able to be done or achieved, or able to exist"
+            }
+        ]
+    },
+    "purple": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "of a dark reddish-blue color"
+            },
+            {
+                "pos": "noun",
+                "definition": "a dark reddish-blue color"
+            }
+        ]
+    },
+    "simple": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "easy to understand or do; not difficult"
+            }
+        ]
+    },
+    "single": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "one only"
+            },
+            {
+                "pos": "verb",
+                "definition": "A baseball player singles by hitting a ball that allows him to reach first base."
+            },
+            {
+                "pos": "noun",
+                "definition": "a record or CD that has a main song and usually a small number of other songs on it"
+            }
+        ]
+    },
+    "suitable": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "acceptable or right for someone or something"
+            },
+            {
+                "pos": "noun",
+                "definition": "being right or correct for a particular situation or person"
+            }
+        ]
+    },
+    "trouble": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "problems or difficulties"
+            },
+            {
+                "pos": "verb",
+                "definition": "to cause someone to be worried or nervous"
+            }
+        ]
+    },
+    "vegetable": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a plant, root, seed, or pod that is used as food, especially in dishes that are not sweet"
+            },
+            {
+                "pos": "adjective",
+                "definition": "made or obtained from a plant, or growing in the form of a plant"
+            }
+        ]
+    },
+    "cable": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a set of wires, covered by plastic, that carries electricity, phone signals, etc."
+            },
+            {
+                "pos": "verb",
+                "definition": "to put cables under the ground in an area so that television or phone signals can be sent along them"
+            }
+        ]
+    },
+    "eagle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a large, strong bird with a curved beak that eats meat and can see very well"
+            },
+            {
+                "pos": "verb",
+                "definition": "in golf, to get the ball into the hole in two shots (= hits) less than par (= the expected number) for that hole"
+            }
+        ]
+    },
+    "maple": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a type of large tree that grows in northern areas of the world, or the wood of this tree"
+            }
+        ]
+    },
+    "table": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a flat surface, usually supported by four legs, at which people sit to eat or work, or on which objects are placed"
+            },
+            {
+                "pos": "verb",
+                "definition": "to delay the formal discussion of a subject until later"
+            }
+        ]
+    },
+    "title": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the name of a movie, book, painting, piece of music, etc."
+            },
+            {
+                "pos": "verb",
+                "definition": "to give a title to a book, movie, play, song, or work of art"
+            }
+        ]
+    },
+    "bicycle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a two-wheeled vehicle that you sit on and move by turning the two pedals (= flat parts you press with your feet)"
+            },
+            {
+                "pos": "verb",
+                "definition": "to ride a bicycle"
+            }
+        ]
+    },
+    "circle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a continuous curved line, the points of which are always the same distance away from a fixed central point, or the area inside such a line"
+            },
+            {
+                "pos": "verb",
+                "definition": "to move in a circle, often around something"
+            }
+        ]
+    },
+    "icicle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a long pointed stick of ice that is formed when drops of water freeze"
+            }
+        ]
+    },
+    "recycle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to sort and collect trash in order to treat it and produce useful materials that can be used again"
+            }
+        ]
+    },
+    "vehicle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a machine, usually with wheels and an engine, used for transporting people or goods, especially on land"
+            },
+            {
+                "pos": "adjective",
+                "definition": "something used to transport people or goods, esp. something used on land or roads"
+            }
+        ]
+    },
+    "uncle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the brother of someone's mother or father, or the husband of someone's aunt or uncle"
+            }
+        ]
+    },
+    "ankle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the joint (= place where two bones are connected) between the foot and the leg, or the thin part of the leg just above the foot"
+            }
+        ]
+    },
+    "candle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a stick-shaped piece of wax with a wick (= piece of string) in the middle of it that produces light as it slowly burns"
+            }
+        ]
+    },
+    "jungle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a tropical forest in which trees and plants grow very closely together"
+            }
+        ]
+    },
+    "castle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a large strong building, built in the past by a ruler or important person to protect the people inside from attack"
+            },
+            {
+                "pos": "verb",
+                "definition": "in chess, to make a special move that puts your king in a more protected place at the side of the board"
+            }
+        ]
+    },
+    "rustle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "If things such as paper or leaves rustle, or if you rustle them, they move about and make a soft, dry sound"
+            },
+            {
+                "pos": "noun",
+                "definition": "the sound made by the movement of things such as leaves or paper"
+            }
+        ]
+    },
+    "whistle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to make a high sound by forcing air through a small hole or passage, especially through the lips, or through a special device held to the lips"
+            },
+            {
+                "pos": "noun",
+                "definition": "the sound made by someone or something whistling"
+            }
+        ]
+    },
+    "wrestle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to fight with someone (especially as a sport) by holding them and trying to throw them to the ground"
+            },
+            {
+                "pos": "noun",
+                "definition": "to fight with someone by holding and trying to throw that person to the ground, or to do this as a sport"
+            }
+        ]
+    },
+    "apple": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a round fruit with firm, white flesh and a green, red, or yellow skin"
+            }
+        ]
+    },
+    "bottle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a container for liquids, usually made of glass or plastic, with a narrow neck"
+            },
+            {
+                "pos": "verb",
+                "definition": "to put something into bottles or jars"
+            }
+        ]
+    },
+    "dazzle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "If light dazzles you, it makes you unable to see for a short time"
+            }
+        ]
+    },
+    "kettle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a container for boiling water, that has a lid, handle, and spout and is made from plastic or metal"
+            },
+            {
+                "pos": "verb",
+                "definition": "If the police kettle a crowd of people, they form lines around them and prevent them from leaving a particular area."
+            }
+        ]
+    },
+    "little": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "small in size or amount"
+            },
+            {
+                "pos": "determiner",
+                "definition": "not much or enough"
+            },
+            {
+                "pos": "pronoun",
+                "definition": "a small amount"
+            },
+            {
+                "pos": "adverb",
+                "definition": "slightly"
+            }
+        ]
+    },
+    "middle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the central point, position, or part"
+            },
+            {
+                "pos": "adjective",
+                "definition": "in a central position"
+            }
+        ]
+    },
+    "puzzle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a situation that is difficult to understand"
+            },
+            {
+                "pos": "verb",
+                "definition": "to cause someone to feel confused and slightly worried because they cannot understand something"
+            },
+            {
+                "pos": "adjective",
+                "definition": "something that is difficult to understand"
+            }
+        ]
+    },
+    "raffle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "an activity in which people buy tickets with different numbers, some of which are later chosen to win prizes, that is organized in order to make money for a good social purpose"
+            },
+            {
+                "pos": "verb",
+                "definition": "to offer something as a prize in a raffle"
+            }
+        ]
+    },
+    "waffle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to talk or write a lot without giving any useful information or any clear answers"
+            },
+            {
+                "pos": "noun",
+                "definition": "a type of bread or cake made from batter (= a thin mixture of milk, flour, and egg) cooked in a special pan whose surface forms a pattern of raised squares"
+            }
+        ]
+    },
+    "wobble": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to (cause something to) shake or move from side to side in a way that shows poor balance"
+            },
+            {
+                "pos": "noun",
+                "definition": "a movement from side to side that shows poor balance"
+            }
+        ]
+    },
+    "pickle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a vegetable or fruit in vinegar or in salty water, especially a cucumber"
+            },
+            {
+                "pos": "verb",
+                "definition": "to put vegetables or fruit in a vinegar sauce or salty water and store them this way in a glass container"
+            },
+            {
+                "pos": "adjective",
+                "definition": "a cucumber (= a green, tube-shaped vegetable) that has been preserved in a liquid containing salt and other spices or vinegar"
+            }
+        ]
+    },
+    "tackle": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to try to deal with something or someone"
+            },
+            {
+                "pos": "noun",
+                "definition": "(especially in football or soccer) an act of tackling someone"
+            }
+        ]
+    },
+    "barrel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a large container, made of wood, metal, or plastic, with a flat top and bottom and curved sides that make it fatter in the middle"
+            },
+            {
+                "pos": "verb",
+                "definition": "to travel somewhere very quickly"
+            }
+        ]
+    },
+    "camel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a large animal with a long neck, that lives in the desert and has one or two humps (= large raised areas of flesh) on its back"
+            }
+        ]
+    },
+    "caramel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "burned sugar used to give flavor and a brown color to food"
+            }
+        ]
+    },
+    "channel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a television or radio station (= an organization that broadcasts television or radio programs)"
+            },
+            {
+                "pos": "verb",
+                "definition": "to direct something into a particular place or situation"
+            }
+        ]
+    },
+    "enamel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a decorative glass-like substance that is melted onto clay, metal, or glass objects, and then left to cool and become hard, or an object covered with this substance"
+            },
+            {
+                "pos": "verb",
+                "definition": "to cover something with enamel"
+            }
+        ]
+    },
+    "funnel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "an object that has a wide round opening at the top, sloping sides, and a narrow tube at the bottom, used for pouring liquids or powders into containers with narrow necks"
+            },
+            {
+                "pos": "verb",
+                "definition": "to put something or to travel through a funnel or something that acts like a funnel"
+            }
+        ]
+    },
+    "gravel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "small, rounded stones, often mixed with sand"
+            }
+        ]
+    },
+    "jewel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a precious stone that is used to decorate valuable objects"
+            }
+        ]
+    },
+    "kennel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a small, usually wooden, shelter for a dog to sleep in outside"
+            }
+        ]
+    },
+    "level": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the height of something"
+            },
+            {
+                "pos": "adjective",
+                "definition": "at the same height as something or someone"
+            },
+            {
+                "pos": "verb",
+                "definition": "to make a surface flat"
+            }
+        ]
+    },
+    "novel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a long printed story about imaginary characters and events"
+            },
+            {
+                "pos": "adjective",
+                "definition": "new and original, not like anything seen before"
+            }
+        ]
+    },
+    "quarrel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "an angry disagreement between two or more people or groups"
+            },
+            {
+                "pos": "verb",
+                "definition": "to have an angry disagreement with someone"
+            }
+        ]
+    },
+    "shovel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a tool consisting of a wide, square metal or plastic blade, usually with slightly raised sides, attached to a handle, for moving loose material such as sand, coal, or snow"
+            },
+            {
+                "pos": "verb",
+                "definition": "to move with a shovel"
+            }
+        ]
+    },
+    "squirrel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a small mammal covered in fur with a long tail. Squirrels climb trees and feed on nuts and seeds"
+            }
+        ]
+    },
+    "towel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a piece of cloth or paper used for drying someone or something that is wet"
+            },
+            {
+                "pos": "verb",
+                "definition": "to rub something with a towel to dry it"
+            }
+        ]
+    },
+    "travel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to make a trip, usually over a long distance"
+            },
+            {
+                "pos": "noun",
+                "definition": "the activity of traveling"
+            },
+            {
+                "pos": "adjective",
+                "definition": "describing a sport that is played by organized teams of young people, often involving the best players who travel to play in different parts of the country"
+            }
+        ]
+    },
+    "tunnel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a long passage under or through the ground, especially one made by people"
+            },
+            {
+                "pos": "verb",
+                "definition": "to dig a tunnel"
+            }
+        ]
+    },
+    "vowel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a speech sound produced by humans when the breath flows out through the mouth without being blocked by the teeth, tongue, or lips"
+            }
+        ]
+    },
+    "cruel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "(of a person or action) extremely unkind and unpleasant and causing pain to people or animals intentionally"
+            },
+            {
+                "pos": "adverb",
+                "definition": "extremely unkind and intentionally causing pain"
+            }
+        ]
+    },
+    "fuel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a substance that is used to provide heat or power, usually by being burned"
+            },
+            {
+                "pos": "verb",
+                "definition": "to supply a system with a substance that can be burned to provide heat or power"
+            }
+        ]
+    },
+    "hotel": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a building where you pay to have a room to sleep in, and where you can sometimes eat meals"
+            },
+            {
+                "pos": "verb",
+                "definition": "to ask to use a desk in an office when you do not have a permanent desk there"
+            }
+        ]
+    },
+    "label": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a piece of paper or other material that gives you information about the object it is attached to"
+            },
+            {
+                "pos": "verb",
+                "definition": "to fasten a label to"
+            }
+        ]
+    },
+    "model": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "something that a copy can be based on because it is an extremely good example of its type"
+            },
+            {
+                "pos": "verb",
+                "definition": "to wear fashionable clothes, jewelry, etc. in order to advertise them"
+            },
+            {
+                "pos": "adjective",
+                "definition": "being someone or something that is an extremely good example of its type, exp. when the person or thing can be copied"
+            }
+        ]
+    },
+    "biological": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "connected with the natural processes of living things"
+            }
+        ]
+    },
+    "central": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "in, at, from, or near the center or most important part of something"
+            },
+            {
+                "pos": "noun",
+                "definition": "an area of central Scotland that was one of nine local government regions until 1996"
+            },
+            {
+                "pos": "adverb",
+                "definition": "main or important"
+            }
+        ]
+    },
+    "classical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "traditional in style or form, or based on methods developed over a long period of time, and considered to be of lasting value"
+            }
+        ]
+    },
+    "criminal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "someone who commits a crime"
+            },
+            {
+                "pos": "adjective",
+                "definition": "relating to crime"
+            },
+            {
+                "pos": "adverb",
+                "definition": "involving or having the character of a crime"
+            }
+        ]
+    },
+    "digital": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "recording or storing information as a series of the numbers 1 and 0, to show that a signal is present or absent"
+            },
+            {
+                "pos": "adverb",
+                "definition": "using a system that can be used by a computer and other electronic equipment, in which information is sent and received in electronic form as a series of the numbers 1 and 0"
+            }
+        ]
+    },
+    "electrical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating to electricity"
+            },
+            {
+                "pos": "adverb",
+                "definition": "using electricity for power, involved in the production or movement of electricity, or related in some way to electricity"
+            }
+        ]
+    },
+    "floral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "made of flowers, or decorated with pictures of flowers"
+            },
+            {
+                "pos": "noun",
+                "definition": "a smell or perfume that is like flowers"
+            }
+        ]
+    },
+    "formal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "public or official"
+            },
+            {
+                "pos": "noun",
+                "definition": "a dance at which women wear fashionable, expensive dresses and men wear tuxedos or similar clothes"
+            },
+            {
+                "pos": "adverb",
+                "definition": "stated or agreed in writing"
+            }
+        ]
+    },
+    "medical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "related to the treatment of illness and injuries"
+            },
+            {
+                "pos": "noun",
+                "definition": "an examination of a person's body by a doctor in order to discover if that person is healthy, sometimes done before a person can be accepted for a particular job"
+            },
+            {
+                "pos": "adverb",
+                "definition": "of or relating to medicine, or for the treatment of disease or injury"
+            }
+        ]
+    },
+    "musical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "related to or connected with music"
+            },
+            {
+                "pos": "noun",
+                "definition": "a play or movie in which part of the story is sung to music"
+            }
+        ]
+    },
+    "national": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating to or typical of a whole country and its people, rather than to part of that country or to other countries"
+            },
+            {
+                "pos": "noun",
+                "definition": "someone who officially belongs to a particular country"
+            },
+            {
+                "pos": "adverb",
+                "definition": "relating to all parts of a nation or to a nation as a whole rather than to any part of it"
+            }
+        ]
+    },
+    "natural": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "as found in nature and not involving anything made or done by people"
+            },
+            {
+                "pos": "noun",
+                "definition": "someone who was born with the right characteristics or abilities for doing a particular thing"
+            },
+            {
+                "pos": "adverb",
+                "definition": "in a way that is normal and relaxed"
+            }
+        ]
+    },
+    "original": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "existing since the beginning, or being the earliest form of something"
+            },
+            {
+                "pos": "noun",
+                "definition": "the first one made and not a copy"
+            }
+        ]
+    },
+    "personal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating or belonging to a single or particular person rather than to a group or an organization"
+            },
+            {
+                "pos": "noun",
+                "definition": "the part of a newspaper or magazine that contains short advertisements and private messages"
+            }
+        ]
+    },
+    "physical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating to the body"
+            },
+            {
+                "pos": "noun",
+                "definition": "an examination of a person's body by a doctor in order to discover if that person is healthy, sometimes done before a person can be accepted for a particular job"
+            }
+        ]
+    },
+    "traditional": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "following or belonging to the customs or ways of behaving that have continued in a group of people or society for a long time without changing"
+            },
+            {
+                "pos": "adverb",
+                "definition": "following or belonging to the ways of behaving or beliefs that have been established for a long time"
+            }
+        ]
+    },
+    "arrival": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the fact of arriving somewhere"
+            }
+        ]
+    },
+    "disposal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the act of getting rid of something, especially by throwing it away"
+            }
+        ]
+    },
+    "trial": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the hearing of statements and showing of objects, etc. in a law court to judge if a person is guilty of a crime or to decide a case or a legal matter"
+            },
+            {
+                "pos": "verb",
+                "definition": "to test something in a formal way to discover how effective or suitable it is"
+            }
+        ]
+    },
+    "animal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "something that lives and moves but is not a human, bird, fish, or insect"
+            },
+            {
+                "pos": "adjective",
+                "definition": "made or obtained from an animal or animals"
+            }
+        ]
+    },
+    "capital": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a city that is the center of government of a country or smaller political area"
+            },
+            {
+                "pos": "adjective",
+                "definition": "(of a letter of the alphabet) in the form and larger size that is used at the beginning of sentences and names"
+            },
+            {
+                "pos": "verb",
+                "definition": "a form of a letter used to begin sentences and names of people, places, and organizations"
+            }
+        ]
+    },
+    "carnival": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "(a special occasion or period of) public enjoyment and entertainment involving wearing unusual clothes, dancing, and eating and drinking, usually held in the streets of a city"
+            }
+        ]
+    },
+    "cereal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a plant that is grown to produce grain"
+            }
+        ]
+    },
+    "coral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a substance like rock formed in the ocean by groups of particular types of small animal, or the small creature that forms this substance"
+            },
+            {
+                "pos": "adjective",
+                "definition": "having a color between orange and pink"
+            }
+        ]
+    },
+    "dial": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "verb",
+                "definition": "to operate a phone or make a phone call to someone by choosing a particular series of numbers on the phone"
+            },
+            {
+                "pos": "noun",
+                "definition": "the part of a machine or device that shows you a measurement of something such as speed or time"
+            }
+        ]
+    },
+    "festival": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a special day or period, usually in memory of a religious event, with its own social activities, food, or ceremonies"
+            }
+        ]
+    },
+    "funeral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a (usually religious) ceremony for burying or burning the body of a dead person"
+            }
+        ]
+    },
+    "hospital": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a place where people who are sick or injured are treated and taken care of by doctors and nurses"
+            }
+        ]
+    },
+    "journal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a serious magazine or newspaper that is published regularly about a particular subject"
+            },
+            {
+                "pos": "verb",
+                "definition": "to write what you have done each day, sometimes including your private thoughts, feelings, and goals"
+            }
+        ]
+    },
+    "mammal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "any animal of which the female feeds her young on milk from her own body. Most mammals give birth to live young, not eggs"
+            }
+        ]
+    },
+    "material": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a physical substance that things can be made from"
+            },
+            {
+                "pos": "adjective",
+                "definition": "relating to physical objects or money rather than emotions or the spiritual world"
+            }
+        ]
+    },
+    "metal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a chemical element, such as iron or gold, or a mixture of such elements, such as steel, that is generally hard and strong, and through which electricity and heat can travel"
+            }
+        ]
+    },
+    "mineral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a valuable or useful chemical substance that is formed naturally in the ground"
+            },
+            {
+                "pos": "adjective",
+                "definition": "being or consisting of a mineral or minerals"
+            }
+        ]
+    },
+    "rival": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a person, group, etc. competing with others for the same thing or in the same area"
+            },
+            {
+                "pos": "verb",
+                "definition": "to be as good, clever, beautiful, etc. as someone or something else"
+            },
+            {
+                "pos": "adjective",
+                "definition": "competing with other people, companies, products, etc. for the same thing or in the same area"
+            }
+        ]
+    },
+    "signal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "an action, movement, or sound that gives information, a message, a warning, or an order"
+            },
+            {
+                "pos": "verb",
+                "definition": "to make a movement, sound, flash, etc. that gives information or tells people what to do"
+            },
+            {
+                "pos": "adjective",
+                "definition": "noticeable and unusual"
+            }
+        ]
+    },
+    "spiral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "a shape made up of curves, each one above or wider than the one before"
+            },
+            {
+                "pos": "verb",
+                "definition": "to move in a spiral"
+            },
+            {
+                "pos": "adjective",
+                "definition": "shaped in a series of curves, each one above or wider than the one before"
+            }
+        ]
+    },
+    "actual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "existing in fact"
+            },
+            {
+                "pos": "noun",
+                "definition": "an amount of money that a company really spends, rather than an amount of money that it plans or expects to spend"
+            }
+        ]
+    },
+    "colossal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "extremely large"
+            }
+        ]
+    },
+    "diagonal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "A diagonal line is straight and sloping, not horizontal or vertical, for example joining two opposite corners of a square or other flat shape with four sides"
+            },
+            {
+                "pos": "noun",
+                "definition": "a straight line that joins two opposite corners of a four-sided flat shape, such as a square"
+            }
+        ]
+    },
+    "equal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "the same in amount, number, or size"
+            },
+            {
+                "pos": "noun",
+                "definition": "someone or something that has the same importance as someone or something else and deserves the same treatment"
+            },
+            {
+                "pos": "verb",
+                "definition": "to be the same in value or amount as something else"
+            }
+        ]
+    },
+    "final": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "last"
+            },
+            {
+                "pos": "noun",
+                "definition": "the last in a series of games, races, or competitions, usually the one in which the winner is chosen"
+            },
+            {
+                "pos": "verb",
+                "definition": "to reach the final of a competition (= the last in a series of games, races, etc., usually the one in which the winner is chosen)"
+            }
+        ]
+    },
+    "general": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "involving or relating to most or all people, things, or places, especially when these are considered as a unit"
+            },
+            {
+                "pos": "noun",
+                "definition": "an officer of very high rank, especially in the army"
+            }
+        ]
+    },
+    "gradual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "happening or changing slowly over a long period of time or distance"
+            },
+            {
+                "pos": "adverb",
+                "definition": "changing or developing slowly or by small degrees"
+            }
+        ]
+    },
+    "lethal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "able to cause or causing death; extremely dangerous"
+            }
+        ]
+    },
+    "loyal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "firm and not changing in your friendship with or support for a person or an organization, or in your belief in your principles"
+            },
+            {
+                "pos": "noun",
+                "definition": "always giving help and encouragement"
+            }
+        ]
+    },
+    "manual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "done with the hands"
+            },
+            {
+                "pos": "noun",
+                "definition": "a book that gives you practical instructions on how to do something or how to use something, such as a machine"
+            },
+            {
+                "pos": "adverb",
+                "definition": "done or operated with the hands"
+            }
+        ]
+    },
+    "moral": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating to the standards of good or bad behavior, fairness, honesty, etc. that each person believes in, rather than to laws"
+            },
+            {
+                "pos": "noun",
+                "definition": "standards for good or bad character and behavior"
+            }
+        ]
+    },
+    "normal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "ordinary or usual; the same as would be expected"
+            },
+            {
+                "pos": "noun",
+                "definition": "ordinary or usual; as would be expected"
+            }
+        ]
+    },
+    "oval": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "shaped like a circle that is flattened so that it is like an egg or an ellipse"
+            },
+            {
+                "pos": "noun",
+                "definition": "an oval object or shape"
+            }
+        ]
+    },
+    "royal": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "belonging or connected to a king or queen or a member of their family"
+            },
+            {
+                "pos": "noun",
+                "definition": "a member of the royal family"
+            }
+        ]
+    },
+    "total": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "noun",
+                "definition": "the amount you get when several smaller amounts are added together"
+            },
+            {
+                "pos": "adjective",
+                "definition": "including everything"
+            },
+            {
+                "pos": "verb",
+                "definition": "to have as a complete amount, or to calculate this"
+            }
+        ]
+    },
+    "usual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "normal; happening, done, or used most often"
+            },
+            {
+                "pos": "noun",
+                "definition": "Someone's usual is the drink, especially an alcoholic one, that they most often have, for example when in a bar"
+            },
+            {
+                "pos": "adverb",
+                "definition": "happening or done most of the time; ordinary"
+            }
+        ]
+    },
+    "vertical": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "standing or pointing straight up or at an angle of 90 degrees to a horizontal surface or line"
+            },
+            {
+                "pos": "noun",
+                "definition": "a vertical line, surface, or position"
+            }
+        ]
+    },
+    "virtual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "almost a particular thing or quality"
+            },
+            {
+                "pos": "adverb",
+                "definition": "almost, but not exactly or in every way"
+            }
+        ]
+    },
+    "visual": {
+        "hidden-letters": -2,
+        "definitions": [
+            {
+                "pos": "adjective",
+                "definition": "relating to seeing"
+            },
+            {
+                "pos": "noun",
+                "definition": "something such as a picture, photograph, or piece of film used to give a particular effect or to explain something"
+            }
+        ]
+    }
+}
