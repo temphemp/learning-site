@@ -15,12 +15,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reset the control explicitly in case the browser restores form state on reload.
   tallyButton.disabled = true;
   const soundPaths = {
-    correct: '/static/sounds/correct.ogg',
-    incorrect: '/static/sounds/incorrect.ogg',
-    applause: '/static/sounds/applause.ogg',
-    success: '/static/sounds/success.ogg',
+    correct: 'static/sounds/correct.ogg',
+    incorrect: 'static/sounds/incorrect.ogg',
+    applause: 'static/sounds/applause.ogg',
+    success: 'static/sounds/success.ogg',
   };
-  const scoringConfig = fetch('scoring.json')
+  const sounds = {};
+
+  const getSound = (soundName) => {
+    if (!sounds[soundName]) {
+      const audio = new Audio(soundPaths[soundName]);
+      audio.preload = 'auto';
+      audio.load();
+      sounds[soundName] = audio;
+    }
+    return sounds[soundName];
+  };
+
+  const preloadSounds = (...names) => {
+    names.forEach((name) => getSound(name));
+  };
+  const scoringConfig = fetch('data-files/scoring.json')
     .then((response) => {
       if (!response.ok) throw new Error('Could not load scoring config.');
       return response.json();
@@ -33,10 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const playSound = (soundName) => {
-    const sound = new Audio(soundPaths[soundName]);
-    sound.play().catch(() => {
-      // The sound files may not be present yet, or the browser may block playback.
-    });
+    const sound = getSound(soundName);
+    if (!sound) return;
+
+    const play = () => {
+      sound.currentTime = 0;
+      sound.play().catch(() => {
+        // The sound files may not be present yet, or the browser may block playback.
+      });
+    };
+
+    if (sound.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      play();
+    } else {
+      sound.addEventListener('canplaythrough', play, { once: true });
+    }
   };
 
   const getScoreBand = (scorePercent) => {
@@ -71,15 +97,16 @@ document.addEventListener('DOMContentLoaded', () => {
     scoreCorrectCount.textContent = correctAnswers;
     scoreTitle.textContent = band.title;
     scoreMessage.textContent = 'You checked every word — well done!';
-    scoreDialog.showModal();
-    confettiLayer.replaceChildren();
-
-    if (band.sound) playSound(band.sound);
-    if (band.id === 'best') launchConfetti();
 
     if (Array.isArray(band.messages) && band.messages.length) {
       scoreMessage.textContent = band.messages[Math.floor(Math.random() * band.messages.length)];
     }
+
+    if (band.sound) playSound(band.sound);
+
+    confettiLayer.replaceChildren();
+    scoreDialog.showModal();
+    if (band.id === 'best') launchConfetti();
   };
 
   const createAnswerActions = (word) => {
@@ -156,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     revealButton.disabled = true;
     answersRevealed = true;
     tallyButton.disabled = false;
+    preloadSounds('correct', 'incorrect', 'applause', 'success');
     wordList.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 

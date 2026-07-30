@@ -223,6 +223,24 @@ collapsible interaction, keyboard controls, and decorative bubbles.
 
 Use `.btn--pink`, `.btn--green`, `.btn--yellow` modifier classes for accent variations.
 
+### 8.4 Shared Dialog
+
+Use the native `<dialog>` element with the reusable `.app-dialog` shell on any page that needs a modal.
+
+| Property | Value |
+|----------|-------|
+| Base class | `.app-dialog` |
+| Width | `min(90vw, 32rem)` |
+| Max height | `calc(100vh - 2rem)` |
+| Background | `var(--color-surface)` |
+| Border | `2px solid var(--color-primary-light)` |
+| Border radius | `var(--radius-md)` |
+| Padding | `var(--space-xl)` |
+| Box shadow | `var(--shadow-lg)` |
+| Backdrop | `rgba(45, 52, 54, 0.45)` via `::backdrop` |
+
+Use `.dialog-close` for the shared close button in the top-right corner.
+
 ---
 
 ## 9. Image Conventions
@@ -281,6 +299,272 @@ learning-site/
     └── sounds/
         └── *.ogg
 ```
+
+---
+
+## 13. Fill-in-the-Blanks Category
+
+Shared components for every exercise page under `fill-in-the-blanks/`. Page files (e.g. `ending-l.html`) contain only a page shell and a small config object — no category-specific logic.
+
+### 13.1 File Layout
+
+```
+learning-site/
+├── components/
+│   └── fill-in-the-blanks/
+│       ├── fitb.css          ← shared styles (header area, question card, word display,
+│       │                        loading skeleton, hint buttons, answer buttons, modal,
+│       │                        correct message)
+│       └── fitb.js           ← shared logic (load JSON, pick word, render UI, sounds,
+│                                check answers, game loop)
+├── data-files/
+│   └── ending-l.json         ← word data (one file per exercise)
+├── fill-in-the-blanks/
+│   ├── index.html            ← category landing page (card grid)
+│   └── ending-l.html         ← page shell + definitions modal shell + FITB.init() config only
+└── static/
+    └── sounds/
+        ├── correct.ogg
+        ├── incorrect.ogg
+        └── ending-l-tts/     ← TTS folder named after the data file (without .json)
+            └── <word>.mp3
+```
+
+| File | Belongs here |
+|------|--------------|
+| `fitb.css` | All visual styles for the game UI |
+| `fitb.js` | All reusable game logic; exposes `FITB.init({ dataFile, options })` |
+| `data-files/<slug>.json` | Words, hidden-letter count, definitions exactly as they should appear in the modal (no answer options) |
+| `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tag for `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path and hardcoded `options` array |
+| `static/sounds/<data-file-name>-tts/` | Pre-recorded TTS audio per word |
+
+### 13.2 Page Init API
+
+```js
+FITB.init({
+  dataFile: './data-files/ending-l.json',
+  options: ['le', 'el', 'al'],
+});
+```
+
+- `dataFile` — path to the JSON word list (relative to the page).
+- `options` — fixed answer choices for that page; not stored in the JSON.
+
+### 13.3 Question Card
+
+The `.fitb-game` wrapper constrains both the question card and answer buttons to the same width. It uses the same viewport-centring breakout as `learning-header`, so it stays aligned on all screen sizes. On narrow viewports it spans the full header width; on wide viewports it caps at `50rem` (~60% of the header band).
+
+| Property | Value |
+|----------|-------|
+| Wrapper class | `.fitb-game` |
+| Header band width | `calc(100vw - (2 * var(--header-inset)))` (CSS var `--fitb-header-width`) |
+| Wrapper width | `min(50rem, var(--fitb-header-width))` (CSS var `--fitb-game-width`) |
+| Wrapper margin | `margin-inline: calc(50% - 50vw + var(--header-inset) + (var(--fitb-header-width) - var(--fitb-game-width)) / 2)` |
+| Wrapper margin bottom | `var(--space-2xl)` |
+| Card class | `.fitb-question-card` |
+| Card width | `100%` (fills the wrapper) |
+| Background | `var(--gradient-card)` |
+| Border | `2px solid var(--color-primary-light)` |
+| Border radius | `clamp(1.5rem, 4vw, 2.5rem)` (matches header shape) |
+| Padding | `var(--space-xl)` (`2rem`) |
+| Box shadow | `var(--shadow-md)` |
+
+### 13.4 Word Display
+
+| Property | Value |
+|----------|-------|
+| Container class | `.fitb-word-display` |
+| Font family | `var(--font-heading)` (`Fredoka`) |
+| Font size | `clamp(2.75rem, 8vw, 4.5rem)` |
+| Font weight | `700` |
+| Color | `var(--color-text)` |
+| Text align | `center` |
+| Letter spacing (visible letters) | `0.08em` |
+| Blank class | `.fitb-blank` |
+| Blank letter spacing | `0.16em` |
+| Blank underline | `3px solid var(--color-primary)` |
+| Blank min width | `1.4ch` per hidden letter |
+| Blank color (unfilled) | `var(--color-primary-light)` |
+
+**Loading skeleton** (shown in the page shell until `FITB.init()` fetches and renders the word)
+
+| Property | Value |
+|----------|-------|
+| Loading modifier | `.fitb-word-display--loading` on `#word-display` |
+| Skeleton blank class | `.fitb-skeleton-blank` |
+| Default skeleton | Five `<span class="fitb-skeleton-blank">_</span>` children (renders as `_____`) |
+| Skeleton blank min width | `1.4ch` (matches `.fitb-blank`) |
+| Skeleton underline | `3px solid var(--color-primary-light)` |
+| Skeleton color | `var(--color-primary-light)` on the container |
+| Animation | `fitb-skeleton-pulse` — opacity pulse `1.2s ease-in-out infinite` |
+| Stagger | `animation-delay` of `0.15s` per child (`nth-child(2)` through `nth-child(5)`) |
+| Accessibility | `aria-busy="true"` and `aria-label="Loading word"` on `#word-display` while loading; removed when the word is rendered |
+| Page shell | Every FITB page HTML includes the skeleton markup; `fitb.js` removes `.fitb-word-display--loading` when the word is ready |
+
+### 13.5 Hint Buttons
+
+Two hint buttons per round: **Listen** (TTS) and **Definitions** (opens modal).
+
+| Property | Value |
+|----------|-------|
+| Container class | `.fitb-hint-buttons` |
+| Container layout | `display: flex; flex-wrap: nowrap; width: 100%; gap: var(--space-md)` |
+| Button class | `.fitb-hint-btn` |
+| Button layout | `flex: 1 1 0` (equal-width, single row) |
+| Font family | `var(--font-heading)` |
+| Font size | `clamp(1rem, 3.8vw, 1.25rem)` |
+| Font weight | `600` |
+| Padding | `var(--space-md) var(--space-sm)` |
+| Border radius | `var(--radius-md)` (`1rem`) — rounded rectangle, not pill |
+| Gap between buttons | `var(--space-md)` |
+
+**Default state**
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-surface)` |
+| Color | `var(--color-primary)` |
+| Border | `2px solid var(--color-primary-light)` |
+| Box shadow | `var(--shadow-sm)` |
+
+**Hover state**
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-primary-light)` |
+| Color | `#fff` |
+| Border color | `var(--color-primary-light)` |
+| Transform | `translateY(-2px) scale(1.04)` |
+| Box shadow | `var(--shadow-pop)` |
+
+**Active / pressed state**
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-primary-dark)` |
+| Color | `#fff` |
+| Border color | `var(--color-primary-dark)` |
+| Transform | `translateY(0) scale(0.98)` |
+| Box shadow | `var(--shadow-sm)` |
+
+### 13.6 Parts-of-Speech Colour Palette
+
+Used in the definitions modal for part-of-speech badges (`.fitb-pos-badge`).
+
+| Part of speech | CSS class | Background | Text colour |
+|----------------|-----------|------------|-------------|
+| noun | `.fitb-pos--noun` | `#74B9FF` (`--color-accent-blue`) | `#2D3436` |
+| plural noun | `.fitb-pos--plural-noun` | `#A29BFE` (`--color-primary-light`) | `#2D3436` |
+| verb | `.fitb-pos--verb` | `#00CEC9` (`--color-accent-green`) | `#2D3436` |
+| adjective | `.fitb-pos--adjective` | `#FD79A8` (`--color-accent-pink`) | `#2D3436` |
+| adverb | `.fitb-pos--adverb` | `#FDCB6E` (`--color-accent-yellow`) | `#2D3436` |
+| determiner | `.fitb-pos--determiner` | `#E17055` (`--color-accent-orange`) | `#FFFFFF` |
+| pronoun | `.fitb-pos--pronoun` | `#6C5CE7` (`--color-primary`) | `#FFFFFF` |
+| (fallback) | `.fitb-pos--other` | `#DFE6E9` (`--color-border`) | `#636E72` (`--color-text-muted`) |
+
+Badge shape: `padding: 0.2rem 0.6rem`, `border-radius: var(--radius-sm)`, `font-size: 0.8rem`, `font-weight: 700`, `text-transform: lowercase`.
+
+### 13.7 Answer Buttons
+
+| Property | Value |
+|----------|-------|
+| Container class | `.fitb-answer-buttons` |
+| Button class | `.fitb-answer-btn` |
+| Container layout | `display: flex; flex-wrap: nowrap; width: 100%; gap: var(--space-md)` |
+| Button layout | `flex: 1 1 0` (equal-width, spans full wrapper width) |
+| Font family | `var(--font-heading)` |
+| Font size | `clamp(1.3rem, 4.8vw, 1.75rem)` |
+| Font weight | `600` |
+| Padding | `var(--space-lg) var(--space-md)` |
+| Border radius | `var(--radius-md)` |
+| Transition | `all var(--transition-base)` |
+
+**Default state**
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-primary)` |
+| Color | `#fff` |
+| Border | `none` |
+| Box shadow | `var(--shadow-md)` |
+
+**Hover state (enabled only)**
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-primary-dark)` |
+| Transform | `translateY(-3px) scale(1.05)` |
+| Box shadow | `var(--shadow-pop)` |
+
+**Correct state** (class `.fitb-answer-btn--correct`)
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-accent-green)` |
+| Color | `#fff` |
+| Box shadow | `0 4px 16px rgba(0,206,201,0.35)` |
+| Pointer events | `none` |
+
+**Incorrect attempt feedback**
+
+An incorrect click does **not** disable any answer button. Instead, `fitb.js` plays `./static/sounds/incorrect.ogg` and applies a `fitb-shake` animation to `.fitb-word-display`.
+
+**Disabled state** (class `.fitb-answer-btn--disabled`)
+
+| Property | Value |
+|----------|-------|
+| Opacity | `0.45` |
+| Pointer events | `none` |
+
+### 13.8 Correct-Answer Message
+
+Shown after a correct answer, above the answer buttons.
+
+| Property | Value |
+|----------|-------|
+| Class | `.fitb-correct-message` |
+| Font family | `var(--font-heading)` |
+| Font size | `1.25rem` |
+| Font weight | `700` |
+| Color | `var(--color-accent-green)` |
+| Text align | `center` |
+| Padding | `var(--space-md) 0` |
+| Animation | `fadeInUp 0.4s var(--ease-bounce)` |
+
+Default text: **"Great job! ✨"**
+
+### 13.9 Definitions Modal
+
+Native `<dialog>` element using the shared `.app-dialog` shell from `style.css`.
+
+| Property | Value |
+|----------|-------|
+| Element / class | `<dialog class="app-dialog fitb-definitions-modal">` |
+| Shared shell | `.app-dialog` supplies the reusable modal frame, border, radius, padding, shadow, and backdrop |
+| Specific class | `.fitb-definitions-modal` supplies FITB-only layout and typography |
+
+**Modal title** (`.fitb-modal-title`): `font-family: var(--font-heading)`, `font-size: 1.3rem`, `font-weight: 700`, `color: var(--color-primary)`, `margin-bottom: var(--space-md)`.
+
+**Definition row** (`.fitb-definition-row`): `margin-bottom: var(--space-md)`; definition text uses `font-size: 0.95rem`, `color: var(--color-text)`, `line-height: 1.5`.
+
+**Definitions text:** definitions are authored directly in `data-files/<slug>.json`; `fitb.js` does not mask or transform the wording at runtime.
+
+**Close button** (`.dialog-close`): shared close button used by both Common Words and FITB dialogs.
+
+### 13.10 Sound File Convention
+
+All audio lives under `./static/sounds/`.
+
+| Sound | Path |
+|-------|------|
+| Correct answer | `./static/sounds/correct.ogg` |
+| Incorrect answer | `./static/sounds/incorrect.ogg` |
+| Word TTS | `./static/sounds/<data-file-name>-tts/<word>.mp3` |
+
+**TTS folder naming:** strip the `.json` extension from the data file name.  
+Example: `data-files/ending-l.json` → TTS files at `./static/sounds/ending-l-tts/couple.mp3`, `./static/sounds/ending-l-tts/double.mp3`, etc.
+
+Playback is triggered by `fitb.js`; pages do not reference sound paths directly.
 
 ---
 

@@ -562,30 +562,35 @@ learning-header.is-collapsed {
   color: rgba(255, 255, 255, 0.82);
 }
 
-.score-dialog {
+.app-dialog {
   position: fixed;
   inset: 0;
   width: min(90vw, 32rem);
   max-height: calc(100vh - 2rem);
   margin: auto;
-  overflow: hidden;
-  border: 0;
-  border-radius: var(--radius-lg);
-  padding: var(--space-2xl);
+  overflow: auto;
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
   color: var(--color-text);
-  text-align: center;
   background: var(--color-surface);
   box-shadow: var(--shadow-lg);
 }
 
-.score-dialog > :not(.confetti-layer) {
+.app-dialog > :not(.confetti-layer):not(.dialog-close) {
   position: relative;
   z-index: 2;
 }
 
-.score-dialog::backdrop {
-  background: rgba(45, 52, 54, 0.42);
+.app-dialog::backdrop {
+  background: rgba(45, 52, 54, 0.45);
   backdrop-filter: blur(4px);
+}
+
+.score-dialog {
+  overflow: hidden;
+  padding: var(--space-2xl);
+  text-align: center;
 }
 
 .score-kicker {
@@ -624,7 +629,7 @@ learning-header.is-collapsed {
 
 .dialog-close {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: var(--space-sm);
   right: var(--space-sm);
   display: grid;
