@@ -307,15 +307,11 @@ const FITB = (() => {
     }
 
     const words = Object.keys(wordData);
-    let word = words[Math.floor(Math.random() * words.length)];
-
-    if (excludeWord && words.length > 1) {
-      let attempts = 0;
-      while (word === excludeWord && attempts < 10) {
-        word = words[Math.floor(Math.random() * words.length)];
-        attempts += 1;
-      }
-    }
+    const eligibleWords =
+      excludeWord && words.length > 1
+        ? words.filter((word) => word !== excludeWord)
+        : words;
+    const word = eligibleWords[Math.floor(Math.random() * eligibleWords.length)];
 
     const entry = wordData[word];
     currentWord = word;
