@@ -13,6 +13,7 @@
 .fitb-game {
   --fitb-header-width: calc(100vw - (2 * var(--header-inset)));
   --fitb-game-width: min(50rem, var(--fitb-header-width));
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -21,8 +22,33 @@
   margin-bottom: var(--space-2xl);
 }
 
+/* ---------- Segmented progress bar ---------- */
+.fitb-progress {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: 0 var(--space-xs);
+}
+
+.fitb-progress-segment {
+  flex: 1 1 0;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: background-color var(--transition-base), transform var(--transition-base);
+}
+
+.fitb-progress-segment--filled {
+  background: var(--color-primary);
+  transform: scaleY(1.15);
+}
+
 /* ---------- Question card ---------- */
 .fitb-question-card {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,6 +59,14 @@
   border: 2px solid var(--color-primary-light);
   border-radius: clamp(1.5rem, 4vw, 2.5rem);
   box-shadow: var(--shadow-md);
+}
+
+/* Confetti sits behind the question card */
+.fitb-confetti-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* ---------- Word display ---------- */
@@ -141,6 +175,8 @@
 
 /* ---------- Answer buttons ---------- */
 .fitb-answer-buttons {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
@@ -179,6 +215,65 @@
 .fitb-answer-btn--disabled {
   opacity: 0.45;
   pointer-events: none;
+}
+
+/* ---------- Round actions (I'm done / Continue) ---------- */
+.fitb-round-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-2xl) 0 var(--space-3xl);
+}
+
+.fitb-round-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 3rem;
+  padding: var(--space-sm) var(--space-lg);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.fitb-round-actions .btn:hover,
+.fitb-round-actions .btn:focus-visible {
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-pop);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.fitb-continue-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.fitb-continue-btn > span {
+  position: relative;
+  z-index: 1;
+}
+
+.fitb-continue-btn--filling::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-green);
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: fitb-btn-fill 5s linear forwards;
+  z-index: 0;
 }
 
 /* ---------- Definitions modal ---------- */
@@ -300,5 +395,11 @@
   40%,
   80% {
     transform: translateX(6px);
+  }
+}
+
+@keyframes fitb-btn-fill {
+  to {
+    transform: scaleX(1);
   }
 }

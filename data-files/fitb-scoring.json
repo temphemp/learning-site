@@ -1,0 +1,7 @@
+{
+  "bands": [
+    { "id": "low",       "maxCorrect": 4,  "sound": null,       "confetti": false },
+    { "id": "good",      "maxCorrect": 8,  "sound": "applause", "confetti": false },
+    { "id": "excellent", "maxCorrect": 10, "sound": "success",  "confetti": true  }
+  ]
+}

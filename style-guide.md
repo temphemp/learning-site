@@ -333,7 +333,7 @@ learning-site/
 | File | Belongs here |
 |------|--------------|
 | `fitb.css` | All visual styles for the game UI |
-| `fitb.js` | All reusable game logic; exposes `FITB.init({ dataFile, options })` |
+| `fitb.js` | All reusable game logic (load JSON, generate spaced-repetition rounds, render UI, sounds, check answers, game loop, persistent stats); exposes `FITB.init({ dataFile, options })` |
 | `data-files/<slug>.json` | Words, hidden-letter count, definitions exactly as they should appear in the modal (no answer options) |
 | `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tag for `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path and hardcoded `options` array |
 | `static/sounds/<data-file-name>-tts/` | Pre-recorded TTS audio per word |
@@ -566,6 +566,70 @@ Example: `data-files/ending-l.json` → TTS files at `./static/sounds/ending-l-t
 
 Playback is triggered by `fitb.js`; pages do not reference sound paths directly.
 
+### 13.11 Spaced-Repetition Progress
+
+`fitb.js` uses a two-tier storage model: long-lived per-word stats in `localStorage`, and the in-progress 10-word round in `sessionStorage`. Word pools are 30–150 words; rounds are always up to 10 words (fewer only if the pool itself is smaller).
+
+**Slug** — derived from the data file name without `.json` via `getSlugFromDataFile` (e.g. `ending-l`).
+
+#### Persistent stats (`localStorage`)
+
+| Property | Value |
+|----------|-------|
+| Key | `fitb-stats:<slug>` (e.g. `fitb-stats:ending-l`) |
+| Value | `{ roundNumber: number, words: { [word]: { box, lastRound, seen } } }` |
+| Helpers | `getStats()`, `saveStats(stats)`, `getWordStats(stats, word)` |
+
+Default when missing/corrupt: `{ roundNumber: 0, words: {} }`. A word with no entry is treated as `{ box: 0, lastRound: 0, seen: 0 }`.
+
+| Field | Meaning |
+|-------|---------|
+| `roundNumber` | How many rounds have been generated for this slug (incremented in `generateRound()`) |
+| `box` | Spaced-repetition stage `0`–`3` |
+| `lastRound` | `roundNumber` when the word was last answered correctly |
+| `seen` | Times the word has been answered correctly |
+
+#### Current round (`sessionStorage`)
+
+| Property | Value |
+|----------|-------|
+| Key | `fitb-round:<slug>` (e.g. `fitb-round:ending-l`) |
+| Value | `{ words: string[≤10], index: number }` |
+| Helpers | `getCurrentRound()`, `saveCurrentRound(round)`, `clearCurrentRound()` |
+
+Survives refresh within the tab; cleared when the tab closes, or when the round finishes (`index` reaches 10).
+
+#### Due intervals (rounds since `lastRound`)
+
+| Box | Due after |
+|-----|-----------|
+| 0 | Every round (always eligible) |
+| 1 | 2 rounds |
+| 2 | 4 rounds |
+| 3 | 8 rounds |
+
+A word with `seen === 0` is always due, regardless of box.
+
+#### Round generation (`generateRound()`)
+
+1. `getStats()` and increment `roundNumber` by 1.
+2. Collect due words; split into **priority** (`box` 0 or 1, or `seen === 0`) and **review** (`box` 2 or 3).
+3. Build a 10-word list: up to 6 random from priority, fill from review, then backfill by most-overdue (`roundNumber - lastRound - requiredInterval`, descending) if still short.
+4. Fisher–Yates shuffle; `saveStats(stats)`; `saveCurrentRound({ words, index: 0 })`; return the round.
+
+#### Loading a word (`loadRound()`)
+
+1. Reset `hadMistakeThisWord = false`.
+2. `getCurrentRound()`; if `null`, call `generateRound()`.
+3. Set `currentWord` to `round.words[round.index]` and render as before.
+
+#### Answering (`handleAnswerClick`)
+
+- **Incorrect** — play incorrect feedback; set `hadMistakeThisWord = true` (word stays active).
+- **Correct** — update that word’s stats: on mistake this attempt `box = max(0, box - 1)`, else `box = min(3, box + 1)`; set `lastRound = stats.roundNumber`; increment `seen`; `saveStats`. Then advance the round: `index += 1`; if `index < 10`, `saveCurrentRound`; if `index === 10`, `clearCurrentRound` (next `loadRound` generates a new round). Existing `ROUND_ADVANCE_MS` timeout still calls `loadRound()`.
+
+Reads/writes are wrapped in `try/catch` so blocked storage never breaks the game. Clearing `fitb-stats:<slug>` resets long-term progress; clearing `fitb-round:<slug>` (or closing the tab) only drops the in-progress round.
+
 ---
 
-*Last updated: July 2026*
+*Last updated: August 2026*
