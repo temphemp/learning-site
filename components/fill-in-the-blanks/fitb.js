@@ -3,13 +3,18 @@
  *
  * See style-guide.md §13 for full documentation.
  *
+ * Requires components/confetti.js to be loaded first (see §8.5) — this file
+ * calls the global `Confetti.launch()` / `Confetti.stop()` rather than
+ * implementing its own celebration effect.
+ *
  * Responsibilities:
  * - Load a JSON data file
  * - Generate 10-word spaced-repetition rounds
  * - Persist per-word stats (localStorage) and the current round (sessionStorage)
  * - Render blanks in the word display
  * - Render hint buttons (TTS, definitions)
- * - Play sounds (TTS, correct, incorrect)
+ * - Play sounds (TTS, correct, incorrect) — correct.ogg is the sole feedback
+ *   for a correct answer; there is no on-screen congratulatory message
  * - Show the definitions modal
  * - Render answer buttons from a fixed options list
  * - Check answers, update SRS boxes, and advance within/across rounds
@@ -23,82 +28,53 @@
  */
 
 const FITB = (() => {
-  const CONGRATULATORY_MESSAGES = [
-    'Great job! ✨',
-    'You got it! 🎉',
-    'Brilliant spelling! ⭐',
-    'Fantastic work! 🌟',
-    'Super star! 💫',
-    'Nailed it! 🏆',
-  ];
-
   const ROUND_ADVANCE_MS = 1500;
-  const ROUND_AUTO_ADVANCE_MS = 5000;
+  const ROUND_AUTO_ADVANCE_MS = 8000;
   const ROUND_SIZE = 10;
+  const CONTROLS_ANIM_MS = 450;
 
-  const CONFETTI_COLORS = [
-    '#6C5CE7',
-    '#A29BFE',
-    '#FD79A8',
-    '#FDCB6E',
-    '#00CEC9',
-    '#E17055',
-    '#74B9FF',
-  ];
-
-  /** @type {string} */
-  let currentWord = '';
-
-  /** @type {Array<{ pos: string, definition: string }>} */
-  let currentDefinitions = [];
-
-  /** @type {number} */
-  let currentHiddenLetters = 0;
-
-  /** @type {string} */
-  let dataFile = '';
-
-  /** @type {Record<string, { 'hidden-letters': number, definitions: Array<{ pos: string, definition: string }> }>} */
-  let wordData = null;
-
-  /** @type {{ bands: Array<{ id: string, maxCorrect: number, sound: string | null, confetti: boolean }> } | null} */
-  let scoringData = null;
-
-  /** @type {boolean} */
-  let roundActive = false;
-
-  /** @type {boolean} */
-  let hintButtonsWired = false;
-
-  /** @type {boolean} */
-  let answerButtonsWired = false;
-
-  /** @type {boolean} */
-  let roundActionsWired = false;
-
-  /** @type {ReturnType<typeof setTimeout> | null} */
-  let advanceTimeout = null;
-
-  /** @type {ReturnType<typeof setTimeout> | null} */
-  let autoAdvanceTimeout = null;
-
-  /** @type {boolean} */
-  let hadMistakeThisWord = false;
-
-  /** @type {number} */
-  let firstGuessCorrectCount = 0;
-
-  /** @type {HTMLDialogElement | null} */
-  let definitionsModal = null;
-
-  /** @type {HTMLAudioElement | null} */
-  let currentTtsAudio = null;
-
-  /** @type {HTMLCanvasElement | null} */
-  let confettiCanvas = null;
-
-  /** @type {number | null} */
-  let confettiAnimationId = null;
+  const state = {
+    data: {
+      /** @type {string} */
+      dataFile: '',
+      /** @type {Record<string, { 'hidden-letters': number, definitions: Array<{ pos: string, definition: string }> }> | null} */
+      wordData: null,
+      /** @type {{ bands: Array<{ id: string, maxCorrect: number, sound: string | null, confetti: boolean }> } | null} */
+      scoringData: null,
+    },
+    session: {
+      /** @type {boolean} */
+      roundActive: false,
+      /** @type {{ word: string, definitions: Array<{ pos: string, definition: string }>, hiddenLetters: number }} */
+      currentPrompt: {
+        word: '',
+        definitions: [],
+        hiddenLetters: 0,
+      },
+      /** @type {{ hadMistakeThisWord: boolean, firstGuessCorrectCount: number, results: Array<'perfect' | 'helped' | null> }} */
+      roundSummary: {
+        hadMistakeThisWord: false,
+        firstGuessCorrectCount: 0,
+        results: [],
+      },
+    },
+    ui: {
+      /** @type {boolean} */
+      hintButtonsWired: false,
+      /** @type {boolean} */
+      answerButtonsWired: false,
+      /** @type {boolean} */
+      roundActionsWired: false,
+      /** @type {ReturnType<typeof setTimeout> | null} */
+      advanceTimeout: null,
+      /** @type {ReturnType<typeof setTimeout> | null} */
+      autoAdvanceTimeout: null,
+      /** @type {HTMLDialogElement | null} */
+      definitionsModal: null,
+      /** @type {HTMLAudioElement | null} */
+      currentTtsAudio: null,
+    },
+  };
 
   /** @type {Record<string, HTMLAudioElement>} */
   const feedbackSounds = {};
@@ -154,7 +130,9 @@ const FITB = (() => {
   }
 
   function getStaticSoundsPath() {
-    const dir = dataFile.includes('/') ? dataFile.slice(0, dataFile.lastIndexOf('/') + 1) : '';
+    const dir = state.data.dataFile.includes('/')
+      ? state.data.dataFile.slice(0, state.data.dataFile.lastIndexOf('/') + 1)
+      : '';
     return dir.replace(/data-files\/?$/, 'static/sounds/');
   }
 
@@ -222,23 +200,98 @@ const FITB = (() => {
     return '';
   }
 
-  function hideCorrectMessage() {
-    const message = document.getElementById('correct-message');
-    if (message) {
-      message.classList.add('hidden');
-    }
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  function showCorrectMessage() {
-    const message = document.getElementById('correct-message');
-    if (!message) {
-      return;
+  /**
+   * @param {HTMLElement} element
+   * @param {string} animationClass
+   * @returns {Promise<void>}
+   */
+  function playControlsAnimation(element, animationClass) {
+    return new Promise((resolve) => {
+      if (prefersReducedMotion()) {
+        element.classList.remove(animationClass);
+        resolve();
+        return;
+      }
+
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        element.classList.remove(animationClass);
+        resolve();
+      };
+
+      element.classList.remove(animationClass);
+      void element.offsetWidth;
+      element.classList.add(animationClass);
+      element.addEventListener('animationend', finish, { once: true });
+      window.setTimeout(finish, CONTROLS_ANIM_MS + 50);
+    });
+  }
+
+  /**
+   * Reveal answer buttons with a grow-in (or instantly if reduced motion /
+   * already visible). Used when a round starts — not between words.
+   * @returns {Promise<void>}
+   */
+  function showAnswerButtons() {
+    const container = document.querySelector('.fitb-answer-buttons');
+    if (!(container instanceof HTMLElement)) {
+      return Promise.resolve();
     }
 
-    const text =
-      CONGRATULATORY_MESSAGES[Math.floor(Math.random() * CONGRATULATORY_MESSAGES.length)];
-    message.textContent = text;
-    message.classList.remove('hidden');
+    if (!container.classList.contains('hidden')) {
+      return Promise.resolve();
+    }
+
+    container.classList.remove('hidden', 'fitb-answer-buttons--exit');
+    return playControlsAnimation(container, 'fitb-answer-buttons--enter');
+  }
+
+  /**
+   * Shrink answer buttons away, then hide them so round actions can sit in
+   * the same slot.
+   * @returns {Promise<void>}
+   */
+  function hideAnswerButtons() {
+    const container = document.querySelector('.fitb-answer-buttons');
+    if (!(container instanceof HTMLElement) || container.classList.contains('hidden')) {
+      return Promise.resolve();
+    }
+
+    container.classList.remove('fitb-answer-buttons--enter');
+
+    if (prefersReducedMotion()) {
+      container.classList.add('hidden');
+      container.classList.remove('fitb-answer-buttons--exit');
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        // Hide while the exit keyframe's final scale is still applied so the
+        // buttons don't snap back to full size for a frame.
+        container.classList.add('hidden');
+        container.classList.remove('fitb-answer-buttons--exit');
+        resolve();
+      };
+
+      void container.offsetWidth;
+      container.classList.add('fitb-answer-buttons--exit');
+      container.addEventListener('animationend', finish, { once: true });
+      window.setTimeout(finish, CONTROLS_ANIM_MS + 50);
+    });
   }
 
   function resetAnswerButtons() {
@@ -289,44 +342,50 @@ const FITB = (() => {
    * @param {HTMLButtonElement} button
    */
   function handleAnswerClick(button) {
-    if (!roundActive) {
+    if (!state.session.roundActive) {
       return;
     }
 
+    const { word, hiddenLetters } = state.session.currentPrompt;
+    const { roundSummary } = state.session;
     const chosen = button.textContent || '';
-    const correctAnswer = getHiddenSubstring(currentWord, currentHiddenLetters);
+    const correctAnswer = getHiddenSubstring(word, hiddenLetters);
 
     if (chosen !== correctAnswer) {
+      button.disabled = true;
+      button.classList.add('fitb-answer-btn--disabled');
       playFeedbackSound('incorrect');
       playIncorrectWordAnimation();
-      hadMistakeThisWord = true;
+      roundSummary.hadMistakeThisWord = true;
       return;
     }
 
-    roundActive = false;
+    state.session.roundActive = false;
 
-    if (!hadMistakeThisWord) {
-      firstGuessCorrectCount += 1;
+    if (!roundSummary.hadMistakeThisWord) {
+      roundSummary.firstGuessCorrectCount += 1;
     }
 
     playFeedbackSound('correct');
     lockAnswerButtonsAfterCorrect(button);
 
     const stats = getStats();
-    const wordStats = getWordStats(stats, currentWord);
-    if (hadMistakeThisWord) {
+    const wordStats = getWordStats(stats, word);
+    if (roundSummary.hadMistakeThisWord) {
       wordStats.box = Math.max(0, wordStats.box - 1);
     } else {
       wordStats.box = Math.min(3, wordStats.box + 1);
     }
     wordStats.lastRound = stats.roundNumber;
     wordStats.seen += 1;
-    stats.words[currentWord] = wordStats;
+    stats.words[word] = wordStats;
     saveStats(stats);
 
     const round = getCurrentRound();
     let roundComplete = false;
     if (round) {
+      const slot = round.index;
+      roundSummary.results[slot] = roundSummary.hadMistakeThisWord ? 'helped' : 'perfect';
       round.index += 1;
       if (round.index < ROUND_SIZE) {
         saveCurrentRound(round);
@@ -334,33 +393,31 @@ const FITB = (() => {
         clearCurrentRound();
         roundComplete = true;
       }
-      updateProgress(round.index);
+      updateProgress(round.index, true);
     } else {
       updateProgress();
     }
 
     const wordDisplay = document.getElementById('word-display');
     if (wordDisplay) {
-      renderWordDisplay(wordDisplay, buildWordDisplay(currentWord, 0));
+      renderWordDisplay(wordDisplay, buildWordDisplay(word, 0));
     }
 
-    showCorrectMessage();
-
-    if (advanceTimeout) {
-      clearTimeout(advanceTimeout);
+    if (state.ui.advanceTimeout) {
+      clearTimeout(state.ui.advanceTimeout);
     }
 
     if (roundComplete) {
-      const capturedScore = firstGuessCorrectCount;
-      advanceTimeout = setTimeout(() => {
-        advanceTimeout = null;
+      const capturedScore = roundSummary.firstGuessCorrectCount;
+      state.ui.advanceTimeout = setTimeout(() => {
+        state.ui.advanceTimeout = null;
         onRoundComplete(capturedScore);
       }, ROUND_ADVANCE_MS);
       return;
     }
 
-    advanceTimeout = setTimeout(() => {
-      advanceTimeout = null;
+    state.ui.advanceTimeout = setTimeout(() => {
+      state.ui.advanceTimeout = null;
       loadRound();
     }, ROUND_ADVANCE_MS);
   }
@@ -378,7 +435,7 @@ const FITB = (() => {
       .map((option) => `<button class="fitb-answer-btn" type="button">${escapeHtml(option)}</button>`)
       .join('');
 
-    if (answerButtonsWired) {
+    if (state.ui.answerButtonsWired) {
       return;
     }
 
@@ -391,15 +448,15 @@ const FITB = (() => {
       handleAnswerClick(button);
     });
 
-    answerButtonsWired = true;
+    state.ui.answerButtonsWired = true;
   }
 
   function loadRound() {
-    if (!wordData) {
+    if (!state.data.wordData) {
       return;
     }
 
-    hadMistakeThisWord = false;
+    state.session.roundSummary.hadMistakeThisWord = false;
 
     let round = getCurrentRound();
     if (round === null) {
@@ -407,21 +464,29 @@ const FITB = (() => {
     }
 
     const word = round.words[round.index];
-    const entry = wordData[word];
-    currentWord = word;
-    currentDefinitions = entry.definitions;
-    currentHiddenLetters = entry['hidden-letters'];
+    const entry = state.data.wordData[word];
+    state.session.currentPrompt = {
+      word,
+      definitions: entry.definitions,
+      hiddenLetters: entry['hidden-letters'],
+    };
 
     const wordDisplay = document.getElementById('word-display');
     if (wordDisplay) {
-      renderWordDisplay(wordDisplay, buildWordDisplay(word, currentHiddenLetters));
+      renderWordDisplay(
+        wordDisplay,
+        buildWordDisplay(word, state.session.currentPrompt.hiddenLetters),
+      );
     }
 
-    hideCorrectMessage();
     resetAnswerButtons();
     updateProgress();
-    roundActive = true;
+    state.session.roundActive = true;
     preloadWordTts();
+
+    // Grow in only when coming from a hidden state (page load / next round),
+    // not when advancing to the next word within the same round.
+    showAnswerButtons();
   }
 
   function preloadFeedbackSounds() {
@@ -432,21 +497,22 @@ const FITB = (() => {
   }
 
   function preloadWordTts() {
-    const url = getTtsUrl(dataFile, currentWord);
-    if (currentTtsAudio?.src.endsWith(`${currentWord}.mp3`)) {
+    const { word } = state.session.currentPrompt;
+    const url = getTtsUrl(state.data.dataFile, word);
+    if (state.ui.currentTtsAudio?.src.endsWith(`${word}.mp3`)) {
       return;
     }
 
-    currentTtsAudio = new Audio(url);
-    currentTtsAudio.preload = 'auto';
+    state.ui.currentTtsAudio = new Audio(url);
+    state.ui.currentTtsAudio.preload = 'auto';
   }
 
   function playWordTts() {
-    if (!currentTtsAudio) {
+    if (!state.ui.currentTtsAudio) {
       preloadWordTts();
     }
 
-    const audio = currentTtsAudio;
+    const audio = state.ui.currentTtsAudio;
     if (!audio) return;
 
     audio.currentTime = 0;
@@ -456,11 +522,11 @@ const FITB = (() => {
   }
 
   function getStatsKey() {
-    return `fitb-stats:${getSlugFromDataFile(dataFile)}`;
+    return `fitb-stats:${getSlugFromDataFile(state.data.dataFile)}`;
   }
 
   function getRoundKey() {
-    return `fitb-round:${getSlugFromDataFile(dataFile)}`;
+    return `fitb-round:${getSlugFromDataFile(state.data.dataFile)}`;
   }
 
   /**
@@ -616,7 +682,8 @@ const FITB = (() => {
    * @returns {{ words: string[], index: number }}
    */
   function generateRound() {
-    firstGuessCorrectCount = 0;
+    state.session.roundSummary.firstGuessCorrectCount = 0;
+    state.session.roundSummary.results = new Array(ROUND_SIZE).fill(null);
 
     const stats = getStats();
     stats.roundNumber += 1;
@@ -627,7 +694,7 @@ const FITB = (() => {
     /** @type {string[]} */
     const review = [];
 
-    for (const word of Object.keys(wordData)) {
+    for (const word of Object.keys(state.data.wordData)) {
       const wordStats = getWordStats(stats, word);
       if (!isWordDue(wordStats, roundNumber)) {
         continue;
@@ -650,7 +717,7 @@ const FITB = (() => {
     }
 
     if (selected.length < ROUND_SIZE) {
-      const backfill = Object.keys(wordData)
+      const backfill = Object.keys(state.data.wordData)
         .filter((word) => !selectedSet.has(word))
         .map((word) => {
           const wordStats = getWordStats(stats, word);
@@ -691,23 +758,39 @@ const FITB = (() => {
 
   /**
    * @param {number} [completedOverride]
+   * @param {boolean} [animate=false]
    */
-  function updateProgress(completedOverride) {
+  function updateProgress(completedOverride, animate = false) {
     const element = document.querySelector('[data-fitb-progress]');
     if (!element) {
       return;
     }
 
     const completed = completedOverride ?? (getCurrentRound()?.index ?? 0);
+    const { results } = state.session.roundSummary;
 
     element.setAttribute('aria-valuenow', String(completed));
-    element.innerHTML = Array.from({ length: ROUND_SIZE }, (_, i) =>
-      `<span class="fitb-progress-segment${i < completed ? ' fitb-progress-segment--filled' : ''}"></span>`,
-    ).join('');
+    element.innerHTML = Array.from({ length: ROUND_SIZE }, (_, i) => {
+      if (i >= completed) {
+        return '<span class="fitb-progress-segment"></span>';
+      }
+
+      const isPerfect = results[i] === 'perfect';
+      const isNew = animate && i === completed - 1;
+      const cls = [
+        'fitb-progress-segment',
+        isPerfect ? 'fitb-progress-segment--perfect' : 'fitb-progress-segment--filled',
+        isNew ? 'fitb-progress-segment--new' : '',
+      ].filter(Boolean).join(' ');
+
+      return `<span class="${cls}"></span>`;
+    }).join('');
   }
 
   function getScoringFile() {
-    const dir = dataFile.includes('/') ? dataFile.slice(0, dataFile.lastIndexOf('/') + 1) : '';
+    const dir = state.data.dataFile.includes('/')
+      ? state.data.dataFile.slice(0, state.data.dataFile.lastIndexOf('/') + 1)
+      : '';
     return `${dir}fitb-scoring.json`;
   }
 
@@ -716,11 +799,13 @@ const FITB = (() => {
    * @returns {{ id: string, maxCorrect: number, sound: string | null, confetti: boolean } | null}
    */
   function getScoreBand(score) {
-    if (!scoringData?.bands?.length) {
+    if (!state.data.scoringData?.bands?.length) {
       return null;
     }
 
-    const bands = [...scoringData.bands].sort((a, b) => a.maxCorrect - b.maxCorrect);
+    const bands = [...state.data.scoringData.bands].sort(
+      (a, b) => a.maxCorrect - b.maxCorrect,
+    );
     return bands.find((band) => score <= band.maxCorrect) || bands[bands.length - 1];
   }
 
@@ -738,14 +823,16 @@ const FITB = (() => {
       launchConfetti();
     }
 
-    showRoundActions();
-    startAutoAdvance();
+    hideAnswerButtons().then(() => {
+      showRoundActions();
+      startAutoAdvance();
+    });
   }
 
   function clearAutoAdvance() {
-    if (autoAdvanceTimeout) {
-      clearTimeout(autoAdvanceTimeout);
-      autoAdvanceTimeout = null;
+    if (state.ui.autoAdvanceTimeout) {
+      clearTimeout(state.ui.autoAdvanceTimeout);
+      state.ui.autoAdvanceTimeout = null;
     }
 
     const continueBtn = document.querySelector('.fitb-continue-btn');
@@ -762,8 +849,8 @@ const FITB = (() => {
       continueBtn.classList.add('fitb-continue-btn--filling');
     }
 
-    autoAdvanceTimeout = setTimeout(() => {
-      autoAdvanceTimeout = null;
+    state.ui.autoAdvanceTimeout = setTimeout(() => {
+      state.ui.autoAdvanceTimeout = null;
       loadNextRound();
     }, ROUND_AUTO_ADVANCE_MS);
   }
@@ -789,7 +876,7 @@ const FITB = (() => {
     const container = document.createElement('div');
     container.className = 'fitb-round-actions hidden';
     container.innerHTML = `
-      <button class="fitb-done-btn btn" type="button">I'm done for today</button>
+      <button class="fitb-break-btn btn" type="button">Take a break</button>
       <button class="fitb-continue-btn btn" type="button"><span>Continue</span></button>
     `;
     game.appendChild(container);
@@ -797,7 +884,7 @@ const FITB = (() => {
   }
 
   function wireRoundActions() {
-    if (roundActionsWired) {
+    if (state.ui.roundActionsWired) {
       return;
     }
 
@@ -806,7 +893,7 @@ const FITB = (() => {
       return;
     }
 
-    container.querySelector('.fitb-done-btn')?.addEventListener('click', () => {
+    container.querySelector('.fitb-break-btn')?.addEventListener('click', () => {
       clearAutoAdvance();
       stopConfetti();
       window.location.href = './index.html';
@@ -816,130 +903,40 @@ const FITB = (() => {
       loadNextRound();
     });
 
-    roundActionsWired = true;
+    state.ui.roundActionsWired = true;
   }
 
   function showRoundActions() {
     wireRoundActions();
     const container = getOrCreateRoundActions();
-    container?.classList.remove('hidden');
+    if (!(container instanceof HTMLElement)) {
+      return;
+    }
+
+    container.classList.remove('hidden');
+    playControlsAnimation(container, 'fitb-round-actions--enter');
   }
 
   function hideRoundActions() {
     const container = document.querySelector('.fitb-round-actions');
     container?.classList.add('hidden');
+    container?.classList.remove('fitb-round-actions--enter');
     document.querySelector('.fitb-continue-btn')?.classList.remove('fitb-continue-btn--filling');
   }
 
-  function stopConfetti() {
-    if (confettiAnimationId !== null) {
-      cancelAnimationFrame(confettiAnimationId);
-      confettiAnimationId = null;
+  /**
+   * Fires the shared confetti celebration (see components/confetti.js,
+   * documented in style-guide.md §8.5) inside the game wrapper.
+   */
+  function launchConfetti() {
+    const game = document.querySelector('.fitb-game');
+    if (game) {
+      Confetti.launch(game);
     }
-
-    confettiCanvas?.remove();
-    confettiCanvas = null;
   }
 
-  function launchConfetti() {
-    stopConfetti();
-
-    const game = document.querySelector('.fitb-game');
-    if (!(game instanceof HTMLElement)) {
-      return;
-    }
-
-    if (getComputedStyle(game).position === 'static') {
-      game.style.position = 'relative';
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.className = 'fitb-confetti-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    game.prepend(canvas);
-    confettiCanvas = canvas;
-
-    const resize = () => {
-      const rect = game.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-    };
-
-    resize();
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      stopConfetti();
-      return;
-    }
-
-    const width = () => canvas.clientWidth;
-    const height = () => canvas.clientHeight;
-    const originX = width() / 2;
-    const originY = height() * 0.72;
-    const durationMs = 3000;
-    const startTime = performance.now();
-
-    /** @type {Array<{ x: number, y: number, vx: number, vy: number, size: number, color: string, rotation: number, spin: number }>} */
-    const particles = Array.from({ length: 120 }, () => {
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.9;
-      const speed = 6 + Math.random() * 10;
-      return {
-        x: originX + (Math.random() - 0.5) * 40,
-        y: originY,
-        vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 2,
-        vy: Math.sin(angle) * speed,
-        size: 4 + Math.random() * 6,
-        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-        rotation: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.3,
-      };
-    });
-
-    const gravity = 0.22;
-    const drag = 0.992;
-
-    const frame = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(1, elapsed / durationMs);
-      const alpha = 1 - progress;
-
-      ctx.clearRect(0, 0, width(), height());
-      ctx.globalAlpha = alpha;
-
-      for (const particle of particles) {
-        particle.vx *= drag;
-        particle.vy = particle.vy * drag + gravity;
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.rotation += particle.spin;
-
-        ctx.save();
-        ctx.translate(particle.x, particle.y);
-        ctx.rotate(particle.rotation);
-        ctx.fillStyle = particle.color;
-        ctx.fillRect(-particle.size / 2, -particle.size / 4, particle.size, particle.size / 2);
-        ctx.restore();
-      }
-
-      ctx.globalAlpha = 1;
-
-      if (progress < 1 && confettiCanvas === canvas) {
-        confettiAnimationId = requestAnimationFrame(frame);
-        return;
-      }
-
-      stopConfetti();
-    };
-
-    confettiAnimationId = requestAnimationFrame(frame);
+  function stopConfetti() {
+    Confetti.stop();
   }
 
   /**
@@ -963,14 +960,14 @@ const FITB = (() => {
    * @returns {HTMLDialogElement}
    */
   function getOrCreateDefinitionsModal() {
-    if (definitionsModal) {
-      return definitionsModal;
+    if (state.ui.definitionsModal) {
+      return state.ui.definitionsModal;
     }
 
     const existingModal = document.querySelector('.fitb-definitions-modal');
     if (existingModal instanceof HTMLDialogElement) {
-      definitionsModal = wireDefinitionsModal(existingModal);
-      return definitionsModal;
+      state.ui.definitionsModal = wireDefinitionsModal(existingModal);
+      return state.ui.definitionsModal;
     }
 
     const modal = document.createElement('dialog');
@@ -983,7 +980,7 @@ const FITB = (() => {
     `;
 
     document.body.appendChild(modal);
-    definitionsModal = wireDefinitionsModal(modal);
+    state.ui.definitionsModal = wireDefinitionsModal(modal);
     return modal;
   }
 
@@ -994,7 +991,7 @@ const FITB = (() => {
       return;
     }
 
-    list.innerHTML = currentDefinitions
+    list.innerHTML = state.session.currentPrompt.definitions
       .map(({ pos, definition }) => {
         const posClass = posToClass(pos);
         return `
@@ -1010,7 +1007,7 @@ const FITB = (() => {
   }
 
   function wireHintButtons() {
-    if (hintButtonsWired) {
+    if (state.ui.hintButtonsWired) {
       return;
     }
 
@@ -1021,7 +1018,7 @@ const FITB = (() => {
 
     buttons[0].addEventListener('click', playWordTts);
     buttons[1].addEventListener('click', showDefinitionsModal);
-    hintButtonsWired = true;
+    state.ui.hintButtonsWired = true;
   }
 
   /**
@@ -1066,7 +1063,7 @@ const FITB = (() => {
    * @param {{ dataFile: string, options: string[] }} config
    */
   function init(config) {
-    dataFile = config.dataFile;
+    state.data.dataFile = config.dataFile;
 
     Promise.all([
       fetch(config.dataFile).then((response) => {
@@ -1083,8 +1080,8 @@ const FITB = (() => {
       }),
     ])
       .then(([data, scoring]) => {
-        wordData = data;
-        scoringData = scoring;
+        state.data.wordData = data;
+        state.data.scoringData = scoring;
         renderAnswerButtons(config.options);
         wireHintButtons();
         wireRoundActions();

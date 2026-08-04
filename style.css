@@ -19,6 +19,13 @@
   --color-accent-orange: #E17055;
   --color-accent-blue:   #74B9FF;
 
+  /* Derived accent shades – darkened variants that keep 4.5:1 contrast
+     as text/hover fills on top of the raw accent colours. */
+  --color-accent-pink-dark:   #D6407E;
+  --color-accent-green-dark:  #00B3AE;
+  --color-accent-yellow-dark: #E0A83E;
+  --color-accent-blue-dark:   #1C72C4;
+
   /* Neutrals */
   --color-bg:            #F8F9FF;
   --color-surface:       #FFFFFF;
@@ -28,11 +35,12 @@
 
   /* Gradients */
   --gradient-hero:  linear-gradient(135deg, #A29BFE 0%, #FD79A8 50%, #FDCB6E 100%);
+  --gradient-hero-glass: linear-gradient(135deg, rgba(162,155,254,0.88) 0%, rgba(253,121,168,0.86) 50%, rgba(253,203,110,0.88) 100%);
   --gradient-card:  linear-gradient(160deg, #ffffff 0%, #f0ecff 100%);
 
   /* Typography */
-  --font-heading: 'Fredoka', 'Nunito', sans-serif;
-  --font-body:    'Nunito', 'Segoe UI', sans-serif;
+  --font-heading: 'Fredoka', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-body:    'Nunito', 'Segoe UI', system-ui, sans-serif;
 
   /* Spacing scale (8 px base) */
   --space-xs:  0.25rem;   /*  4 px */
@@ -93,6 +101,32 @@ img {
   height: auto;
 }
 
+/* ---------- Icons (monochrome via currentColor — readable on light or dark button fills) ---------- */
+.icon {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  vertical-align: -0.12em;
+}
+
+.icon--speaker {
+  -webkit-mask-image: url("static/images/icons/speaker.svg");
+  mask-image: url("static/images/icons/speaker.svg");
+}
+
+.icon--search {
+  -webkit-mask-image: url("static/images/icons/search.svg");
+  mask-image: url("static/images/icons/search.svg");
+}
+
 /* ---------- Page Wrapper ---------- */
 .page-wrapper {
   max-width: 1200px;
@@ -121,6 +155,13 @@ learning-header.is-collapsed {
   margin-bottom: var(--space-lg);
 }
 
+/* A collapsed-only header is decorative, not interactive. */
+learning-header[collapse-mode="collapsed-only"] .hero,
+learning-header[permanently-collapsed] .hero,
+learning-header[data-collapse-mode="collapsed-only"] .hero {
+  cursor: default;
+}
+
 .hero {
   position: relative;
   width: 100%;
@@ -131,7 +172,7 @@ learning-header.is-collapsed {
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: clamp(1.5rem, 4vw, 2.5rem);
-  background: linear-gradient(135deg, rgba(162, 155, 254, 0.88) 0%, rgba(253, 121, 168, 0.86) 50%, rgba(253, 203, 110, 0.88) 100%);
+  background: var(--gradient-hero-glass);
   box-shadow: 0 8px 28px rgba(88, 75, 170, 0.18);
   backdrop-filter: blur(12px) saturate(130%);
   -webkit-backdrop-filter: blur(12px) saturate(130%);
@@ -261,7 +302,6 @@ learning-header.is-collapsed {
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,14 +336,6 @@ learning-header.is-collapsed {
   color: var(--color-text-muted);
   line-height: 1.5;
 }
-
-/* Card accent stripe (top colour per card via data attribute) */
-.exercise-card:nth-child(6n+1) .card-image-wrapper { background: linear-gradient(135deg, #DFE6FF, #F0ECFF); }
-.exercise-card:nth-child(6n+2) .card-image-wrapper { background: linear-gradient(135deg, #FFE0EC, #FFF0F5); }
-.exercise-card:nth-child(6n+3) .card-image-wrapper { background: linear-gradient(135deg, #E0F8F7, #F0FFFE); }
-.exercise-card:nth-child(6n+4) .card-image-wrapper { background: linear-gradient(135deg, #FFF4D6, #FFFDF0); }
-.exercise-card:nth-child(6n+5) .card-image-wrapper { background: linear-gradient(135deg, #DFF6FF, #F0FBFF); }
-.exercise-card:nth-child(6n+6) .card-image-wrapper { background: linear-gradient(135deg, #FFE8D6, #FFF5EE); }
 
 /* Alternate card title colours for variety */
 .exercise-card:nth-child(6n+2) .card-title { color: var(--color-accent-pink);   }
@@ -377,8 +409,9 @@ learning-header.is-collapsed {
 }
 
 .word-item {
+  --word-control-size: 2.75rem;
   display: grid;
-  grid-template-columns: 2.5rem auto minmax(5.5rem, 1fr);
+  grid-template-columns: var(--word-control-size) auto minmax(5.5rem, 1fr);
   align-items: center;
   gap: var(--space-sm);
   min-height: 4.5rem;
@@ -391,15 +424,15 @@ learning-header.is-collapsed {
 }
 
 .word-item.is-revealed {
-  grid-template-columns: 2.5rem auto minmax(0, 1fr) auto;
+  grid-template-columns: var(--word-control-size) auto minmax(0, 1fr) auto;
   min-height: 4rem;
 }
 
 .word-item::before {
   content: counter(common-words);
   display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: var(--word-control-size);
+  height: var(--word-control-size);
   place-items: center;
   border-radius: var(--radius-full);
   color: var(--color-primary-dark);
@@ -408,30 +441,38 @@ learning-header.is-collapsed {
   font-weight: 700;
 }
 
+/* Filled pink circle — distinct from the outline correct/incorrect marks
+   (see .answer-choice). Same size as the serial number and mark buttons. */
 .speak-button {
   display: inline-grid;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: var(--word-control-size);
+  height: var(--word-control-size);
   place-items: center;
-  border: 0;
+  border: none;
   border-radius: var(--radius-full);
   color: #fff;
-  background: var(--color-primary);
+  background: var(--color-accent-pink);
   box-shadow: var(--shadow-md);
   cursor: pointer;
   transition: transform var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
 }
 
+.speak-button .icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
 .speak-button:hover,
 .speak-button:focus-visible {
-  background: var(--color-primary-dark);
+  background: var(--color-accent-pink-dark);
   box-shadow: var(--shadow-pop);
   transform: translateY(-2px) scale(1.07);
 }
 
 .speak-button:active,
 .speak-button.is-speaking {
-  background: var(--color-accent-pink);
+  background: var(--color-accent-pink-dark);
+  box-shadow: var(--shadow-sm);
   transform: scale(0.96);
 }
 
@@ -455,8 +496,8 @@ learning-header.is-collapsed {
 
 .answer-choice {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--word-control-size);
+  height: var(--word-control-size);
   place-items: center;
   border: 2px solid currentColor;
   border-radius: var(--radius-full);
@@ -562,6 +603,34 @@ learning-header.is-collapsed {
   color: rgba(255, 255, 255, 0.82);
 }
 
+.btn--pink {
+  background: var(--color-accent-pink);
+}
+
+.btn--pink:hover,
+.btn--pink:focus-visible {
+  background: var(--color-accent-pink-dark);
+}
+
+.btn--green {
+  background: var(--color-accent-green);
+}
+
+.btn--green:hover,
+.btn--green:focus-visible {
+  background: var(--color-accent-green-dark);
+}
+
+.btn--yellow {
+  background: var(--color-accent-yellow);
+  color: var(--color-text);
+}
+
+.btn--yellow:hover,
+.btn--yellow:focus-visible {
+  background: var(--color-accent-yellow-dark);
+}
+
 .app-dialog {
   position: fixed;
   inset: 0;
@@ -577,7 +646,7 @@ learning-header.is-collapsed {
   box-shadow: var(--shadow-lg);
 }
 
-.app-dialog > :not(.confetti-layer):not(.dialog-close) {
+.app-dialog > :not(.dialog-close) {
   position: relative;
   z-index: 2;
 }
@@ -651,25 +720,6 @@ learning-header.is-collapsed {
   background: var(--color-accent-pink);
 }
 
-.confetti-layer {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  pointer-events: none;
-}
-
-.confetti-piece {
-  position: absolute;
-  top: -1.25rem;
-  left: var(--confetti-left);
-  width: 0.6rem;
-  height: 1rem;
-  border-radius: 0.15rem;
-  background: var(--confetti-color);
-  animation: confetti-fall var(--confetti-duration) ease-in forwards;
-  animation-delay: var(--confetti-delay);
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -682,31 +732,20 @@ learning-header.is-collapsed {
   border: 0;
 }
 
-@keyframes confetti-fall {
-  to {
-    transform: translate(var(--confetti-drift), 27rem) rotate(720deg);
-    opacity: 0;
-  }
-}
-
 @media (max-width: 640px) {
   .word-list {
     grid-template-columns: 1fr;
   }
 
   .word-item {
-    grid-template-columns: 2.25rem auto minmax(5rem, 1fr);
+    --word-control-size: 2.5rem;
+    grid-template-columns: var(--word-control-size) auto minmax(5rem, 1fr);
     min-height: 4rem;
     padding: var(--space-sm);
   }
 
   .word-item.is-revealed {
-    grid-template-columns: 2.25rem auto minmax(0, 1fr) auto;
-  }
-
-  .answer-choice {
-    width: 2.25rem;
-    height: 2.25rem;
+    grid-template-columns: var(--word-control-size) auto minmax(0, 1fr) auto;
   }
 
   .exercise-intro {
@@ -719,9 +758,5 @@ learning-header.is-collapsed {
   .btn,
   .answer-choice {
     transition: none;
-  }
-
-  .confetti-piece {
-    animation: none;
   }
 }

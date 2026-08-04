@@ -1,8 +1,10 @@
-/* ==========================================================
+/*
+   ==========================================================
    Fill-in-the-Blanks (FITB) – Shared Styles
    ==========================================================
    See style-guide.md §13 for full documentation.
-   ========================================================== */
+   ==========================================================
+*/
 
 /* ---------- Utilities ---------- */
 .hidden {
@@ -41,8 +43,26 @@
 }
 
 .fitb-progress-segment--filled {
-  background: var(--color-primary);
+  background: var(--color-accent-green);
   transform: scaleY(1.15);
+}
+
+.fitb-progress-segment--perfect {
+  background: var(--color-accent-yellow);
+  transform: scaleY(1.35);
+  box-shadow: 0 0 6px rgba(253, 203, 110, 0.6);
+}
+
+.fitb-progress-segment--new {
+  animation: fitb-segment-pop 0.4s var(--ease-bounce);
+}
+
+.fitb-progress-segment--filled.fitb-progress-segment--new {
+  --seg-final-scale: 1.15;
+}
+
+.fitb-progress-segment--perfect.fitb-progress-segment--new {
+  --seg-final-scale: 1.35;
 }
 
 /* ---------- Question card ---------- */
@@ -61,13 +81,9 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Confetti sits behind the question card */
-.fitb-confetti-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
+/* Confetti is handled entirely by the shared components/confetti.js
+   (see style-guide.md §8.5) — it styles its own canvas inline, so there is
+   deliberately no .fitb-confetti-canvas rule here anymore. */
 
 /* ---------- Word display ---------- */
 .fitb-word-display {
@@ -85,7 +101,6 @@
   min-width: 1.4ch;
   color: var(--color-primary-light);
   letter-spacing: 0.16em;
-  border-bottom: 3px solid var(--color-primary);
 }
 
 .fitb-word-display--incorrect {
@@ -101,7 +116,6 @@
   display: inline-block;
   min-width: 1.4ch;
   letter-spacing: 0.16em;
-  border-bottom: 3px solid var(--color-primary-light);
   animation: fitb-skeleton-pulse 1.2s ease-in-out infinite;
 }
 
@@ -130,6 +144,10 @@
 }
 
 .fitb-hint-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
   flex: 1 1 0;
   font-family: var(--font-heading);
   font-size: clamp(1rem, 3.8vw, 1.25rem);
@@ -161,16 +179,41 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* ---------- Correct-answer message ---------- */
-.fitb-correct-message {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-accent-green);
-  text-align: center;
-  padding: var(--space-md) 0;
-  margin: 0;
-  animation: fitb-fade-in-up 0.4s var(--ease-bounce);
+/* Colour-coded hint variants: gives each hint a distinct identity instead of
+   two identical purple buttons, and reuses accent tokens already defined
+   for the part-of-speech badges (see style-guide.md §14.6). */
+.fitb-hint-btn--listen {
+  border-color: var(--color-accent-pink);
+  color: var(--color-accent-pink-dark);
+}
+
+.fitb-hint-btn--listen:hover {
+  background: var(--color-accent-pink);
+  border-color: var(--color-accent-pink);
+  color: #fff;
+}
+
+.fitb-hint-btn--listen:active {
+  background: var(--color-accent-pink-dark);
+  border-color: var(--color-accent-pink-dark);
+  color: #fff;
+}
+
+.fitb-hint-btn--define {
+  border-color: var(--color-accent-blue);
+  color: var(--color-accent-blue-dark);
+}
+
+.fitb-hint-btn--define:hover {
+  background: var(--color-accent-blue);
+  border-color: var(--color-accent-blue);
+  color: #2d3436;
+}
+
+.fitb-hint-btn--define:active {
+  background: var(--color-accent-blue-dark);
+  border-color: var(--color-accent-blue-dark);
+  color: #fff;
 }
 
 /* ---------- Answer buttons ---------- */
@@ -181,6 +224,16 @@
   flex-wrap: nowrap;
   width: 100%;
   gap: var(--space-md);
+  transform-origin: center center;
+}
+
+.fitb-answer-buttons--enter {
+  animation: fitb-controls-enter 0.45s var(--ease-bounce) both;
+}
+
+.fitb-answer-buttons--exit {
+  animation: fitb-controls-exit 0.3s ease-in both;
+  pointer-events: none;
 }
 
 .fitb-answer-btn {
@@ -218,16 +271,29 @@
 }
 
 /* ---------- Round actions (I'm done / Continue) ---------- */
+/* Sit in the same slot as the answer buttons (which shrink away first),
+   so they aren't pushed below a still-visible answer row on desktop.
+   Spacing below the question card comes only from `.fitb-game` gap —
+   same as `.fitb-answer-buttons` — so do not add padding/min-height that
+   would push the buttons further down. */
 .fitb-round-actions {
   position: relative;
   z-index: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--space-md);
-  padding: var(--space-2xl) 0 var(--space-3xl);
+  transform-origin: center center;
 }
 
+.fitb-round-actions--enter {
+  animation: fitb-controls-enter 0.45s var(--ease-bounce) both;
+}
+
+/* Shared shape/typography only — colour now comes from the primary/secondary
+   variants below so the two round-end actions read as clearly different
+   choices instead of two purple pills. */
 .fitb-round-actions .btn {
   display: inline-flex;
   align-items: center;
@@ -235,10 +301,8 @@
   gap: var(--space-sm);
   min-height: 3rem;
   padding: var(--space-sm) var(--space-lg);
-  border: 0;
+  border: 2px solid transparent;
   border-radius: 999px;
-  color: #fff;
-  background: var(--color-primary);
   box-shadow: var(--shadow-md);
   font-family: var(--font-heading);
   font-size: 1.05rem;
@@ -247,17 +311,25 @@
   transition: all var(--transition-base);
 }
 
-.fitb-round-actions .btn:hover,
-.fitb-round-actions .btn:focus-visible {
-  background: var(--color-primary-dark);
-  box-shadow: var(--shadow-pop);
-  transform: translateY(-2px) scale(1.04);
-}
-
+/* Primary action: "Continue" — filled, uses the same green as the correct-
+   answer feedback so it reads as "onward / more success", and is visually
+   heavier than the secondary action. */
 .fitb-continue-btn {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  color: #fff;
+  background: var(--color-accent-green);
+  border-color: var(--color-accent-green);
+  box-shadow: 0 4px 16px rgba(0, 206, 201, 0.35);
+}
+
+.fitb-continue-btn:hover,
+.fitb-continue-btn:focus-visible {
+  background: var(--color-accent-green-dark);
+  border-color: var(--color-accent-green-dark);
+  box-shadow: var(--shadow-pop);
+  transform: translateY(-2px) scale(1.04);
 }
 
 .fitb-continue-btn > span {
@@ -265,15 +337,37 @@
   z-index: 1;
 }
 
+/* Auto-advance timer: a light sweep over the existing green fill, rather
+   than a full colour swap from purple to green, so the button doesn't
+   change identity mid-animation. */
 .fitb-continue-btn--filling::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--color-accent-green);
+  background: rgba(255, 255, 255, 0.3);
   transform-origin: left;
   transform: scaleX(0);
-  animation: fitb-btn-fill 5s linear forwards;
+  animation: fitb-btn-fill 8s linear forwards;
   z-index: 0;
+}
+
+/* Secondary action: "Take a break" — ghost/outline style, muted neutral
+   colours. Visually recedes next to Continue so it doesn't compete for
+   attention, while still being an easy, guilt-free tap. */
+.fitb-break-btn {
+  color: var(--color-text-muted);
+  background: transparent;
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+.fitb-break-btn:hover,
+.fitb-break-btn:focus-visible {
+  color: var(--color-text);
+  background: var(--color-bg);
+  border-color: var(--color-text-muted);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 /* ---------- Definitions modal ---------- */
@@ -369,18 +463,6 @@
   }
 }
 
-@keyframes fitb-fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(0.5rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes fitb-shake {
   0%,
   100% {
@@ -401,5 +483,52 @@
 @keyframes fitb-btn-fill {
   to {
     transform: scaleX(1);
+  }
+}
+
+@keyframes fitb-controls-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fitb-controls-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+}
+
+@keyframes fitb-segment-pop {
+  0% {
+    transform: scaleY(0);
+  }
+
+  65% {
+    transform: scaleY(1.6);
+  }
+
+  100% {
+    transform: scaleY(var(--seg-final-scale, 1.15));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fitb-answer-buttons--enter,
+  .fitb-answer-buttons--exit,
+  .fitb-round-actions--enter,
+  .fitb-progress-segment--new {
+    animation: none;
   }
 }

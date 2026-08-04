@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreCorrectCount = document.querySelector('#score-correct-count');
   const scoreTitle = document.querySelector('#score-title');
   const scoreMessage = document.querySelector('#score-message');
-  const confettiLayer = document.querySelector('#confetti-layer');
   const supportsSpeech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
   let answersRevealed = false;
 
@@ -72,24 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return bands[bands.length - 1];
   };
 
-  const launchConfetti = () => {
-    const colors = ['#6C5CE7', '#FD79A8', '#FDCB6E', '#00CEC9', '#74B9FF'];
-    confettiLayer.replaceChildren();
-
-    Array.from({ length: 42 }, (_, index) => {
-      const piece = document.createElement('span');
-      piece.className = 'confetti-piece';
-      piece.style.setProperty('--confetti-left', `${Math.random() * 100}%`);
-      piece.style.setProperty('--confetti-color', colors[index % colors.length]);
-      piece.style.setProperty('--confetti-duration', `${1.5 + Math.random() * 1.25}s`);
-      piece.style.setProperty('--confetti-delay', `${Math.random() * 0.45}s`);
-      piece.style.setProperty('--confetti-drift', `${-80 + Math.random() * 160}px`);
-      confettiLayer.append(piece);
-    });
-
-    window.setTimeout(() => confettiLayer.replaceChildren(), 3200);
-  };
-
   const showScore = (correctAnswers, totalAnswers) => {
     const scorePercent = (correctAnswers / totalAnswers) * 100;
     const band = getScoreBand(scorePercent);
@@ -104,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (band.sound) playSound(band.sound);
 
-    confettiLayer.replaceChildren();
+    Confetti.stop();
     scoreDialog.showModal();
-    if (band.id === 'best') launchConfetti();
+    if (band.id === 'best') Confetti.launch(scoreDialog);
   };
 
   const createAnswerActions = (word) => {
@@ -221,6 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   [closeScoreDialogButton, scoreDialogDoneButton].forEach((button) => {
-    button.addEventListener('click', () => scoreDialog.close());
+    button.addEventListener('click', () => {
+      Confetti.stop();
+      scoreDialog.close();
+    });
   });
 });

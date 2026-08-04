@@ -37,6 +37,19 @@ All values are defined as CSS custom properties in `style.css`.
 | `--color-accent-orange` | `#E17055` | Warnings, energetic pops |
 | `--color-accent-blue` | `#74B9FF` | Info badges, cool highlights |
 
+### Derived accent shades
+
+Darkened variants of the accent colours, used whenever an accent fill needs
+white/dark text at 4.5:1 contrast (button hovers, filled speak/listen/define
+controls, the Continue button).
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-accent-pink-dark` | `#D6407E` | `.btn--pink` hover, `.speak-button` hover/active, `.fitb-hint-btn--listen` active |
+| `--color-accent-green-dark` | `#00B3AE` | `.btn--green` hover, `.fitb-continue-btn` hover |
+| `--color-accent-yellow-dark` | `#E0A83E` | `.btn--yellow` hover |
+| `--color-accent-blue-dark` | `#1C72C4` | `.fitb-hint-btn--define` text/active |
+
 ### Neutrals
 
 | Token | Hex | Usage |
@@ -51,7 +64,8 @@ All values are defined as CSS custom properties in `style.css`.
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--gradient-hero` | `135deg, #A29BFE → #FD79A8 → #FDCB6E` | Page header / hero section |
+| `--gradient-hero` | `135deg, #A29BFE → #FD79A8 → #FDCB6E` | Opaque hero gradient (solid backgrounds) |
+| `--gradient-hero-glass` | `135deg, rgba(162,155,254,0.88) → rgba(253,121,168,0.86) → rgba(253,203,110,0.88)` | Semi-transparent variant used by the sticky `.hero` so `backdrop-filter` frosted-glass shows content behind it |
 | `--gradient-card` | `160deg, #ffffff → #f0ecff` | Card surface background |
 
 > **Rule of thumb:** Use at most 2–3 colours per component. Let whitespace do the talking.
@@ -161,7 +175,7 @@ Use tinted shadows (purple/pink) instead of plain grey for a more colourful feel
 
 ```
 .exercise-card
-├── .card-image-wrapper     (aspect-ratio: 16/10, overflow hidden, gradient bg)
+├── .card-image-wrapper     (aspect-ratio: 16/10, overflow hidden)
 │   └── .card-image         (object-fit: cover, hover zoom)
 └── .card-body              (padding: var(--space-lg))
     ├── .card-title         (font-heading, color: accent per card)
@@ -171,12 +185,18 @@ Use tinted shadows (purple/pink) instead of plain grey for a more colourful feel
 - Background: `--gradient-card`
 - Border: `2px solid --color-border`
 - Border radius: `--radius-lg`
-- Six colour variations cycle via `:nth-child(6n+N)` selectors
+- Card title colours cycle via `:nth-child(6n+N)` selectors
+- The image wrapper has no background: the `object-fit: cover` card image
+  fills the 16:10 area completely, so any tint behind it is never visible.
 
 ### 8.2 Hero Header
 
 Use the `learning-header` custom element on every page. Set its content with
 the `title` and `subtitle` attributes:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--header-inset` | `clamp(0.75rem, 2vw, 1.5rem)` | Horizontal inset for the hero breakout layout (keeps the header aligned with the page content on all screen sizes) |
 
 ```html
 <learning-header
@@ -186,7 +206,44 @@ the `title` and `subtitle` attributes:
 ```
 
 The component lives in `components/learning-header.js` and includes the
-collapsible interaction, keyboard controls, and decorative bubbles.
+collapsible interaction, keyboard controls, decorative bubbles, and a
+transition lock/hysteresis guard so scroll-based state changes do not visibly
+oscillate while the hero is animating.
+
+#### Collapse modes
+
+`learning-header` supports two built-in modes:
+
+- `collapsible` (default) - the original interactive header. It expands near the
+  top of the page, collapses after scrolling, and can be toggled with click or
+  keyboard.
+- `collapsed-only` - a non-interactive compact header for pages where the title
+  is only context and the task itself should stay front-and-center.
+
+Use the `collapse-mode` attribute to select the mode explicitly:
+
+```html
+<learning-header
+  title="Common Words"
+  subtitle="Listen carefully, then write each word on your paper!"
+  collapse-mode="collapsed-only"
+></learning-header>
+```
+
+When `collapse-mode="collapsed-only"` is present:
+
+- The header renders collapsed on load and never expands.
+- The scroll listener, click toggle, and keyboard toggle are not bound.
+- The `.hero` element loses its `role="button"`, `tabindex`, and `aria-label`
+  attributes — it is decorative, not interactive — and `cursor: default`
+  replaces the pointer cursor.
+
+Changing the mode back to `collapsible` at runtime re-binds the interactions and
+restores the normal expand/collapse behaviour.
+
+For backward compatibility, the older boolean `permanently-collapsed` attribute
+is still accepted and maps to `collapse-mode="collapsed-only"`, but new pages
+should use `collapse-mode`.
 
 ```
 .hero
@@ -196,7 +253,7 @@ collapsible interaction, keyboard controls, and decorative bubbles.
 └── .hero-subtitle          (medium, white, 92% opacity)
 ```
 
-- Background: `--gradient-hero`
+- Background: `--gradient-hero-glass` (the semi-transparent variant of `--gradient-hero`, so the `backdrop-filter` frosted glass shows the page content behind the sticky header)
 - Bottom rounded corners: `radius-lg`
 
 ### 8.3 Buttons (for future pages)
@@ -206,7 +263,7 @@ collapsible interaction, keyboard controls, and decorative bubbles.
   font-family: var(--font-heading);
   font-weight: 600;
   padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   border: none;
   background: var(--color-primary);
   color: #fff;
@@ -221,7 +278,15 @@ collapsible interaction, keyboard controls, and decorative bubbles.
 }
 ```
 
-Use `.btn--pink`, `.btn--green`, `.btn--yellow` modifier classes for accent variations.
+Use `.btn--pink`, `.btn--green`, `.btn--yellow` modifier classes for accent variations. They keep the `.btn` pill shape and the base hover lift/shadow; each modifier only swaps the fill colour.
+
+| Modifier | Default fill | Hover / focus fill |
+|----------|--------------|--------------------|
+| `.btn--pink` | `var(--color-accent-pink)` | `var(--color-accent-pink-dark)` |
+| `.btn--green` | `var(--color-accent-green)` | `var(--color-accent-green-dark)` |
+| `.btn--yellow` | `var(--color-accent-yellow)` with `var(--color-text)` text | `var(--color-accent-yellow-dark)` (dark text kept — white fails contrast on yellow) |
+
+The hover shades are the derived `--color-accent-*-dark` tokens from §2, which exist so every accent-coloured control shares the same darkened hover treatment instead of hardcoding hex values.
 
 ### 8.4 Shared Dialog
 
@@ -241,21 +306,108 @@ Use the native `<dialog>` element with the reusable `.app-dialog` shell on any p
 
 Use `.dialog-close` for the shared close button in the top-right corner.
 
+### 8.5 Confetti (Shared Component)
+
+A single, dependency-free celebration effect used by **every** page that wants a confetti burst — currently the Common Words score dialog and every Fill-in-the-Blanks page. There is exactly one implementation; pages must not fork their own.
+
+| Property | Value |
+|----------|-------|
+| File | `components/confetti.js` |
+| Global | `Confetti` (plain script global, same pattern as `FITB` — no bundler/module system) |
+| API | `Confetti.launch(containerEl, options?)`, `Confetti.stop()` |
+| Loading | Include `<script src=".../components/confetti.js" defer></script>` **before** any script that calls it (`fitb.js`, `common-words.js`) |
+| Styling | Applied entirely inline by the module (position, inset, z-index, pointer-events) — no matching CSS file to include or keep in sync |
+
+**`Confetti.launch(containerEl, options)`**
+
+- `containerEl` — any element with a defined size (game wrapper, `<dialog>`, card). Becomes the canvas's positioning context; switched to `position: relative` automatically if it's currently `static`.
+- `options` (all optional, merged over defaults):
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `colors` | `['#6C5CE7', '#A29BFE', '#FD79A8', '#FDCB6E', '#00CEC9', '#E17055', '#74B9FF']` | Full brand palette — every accent gets used, not just green |
+| `durationMs` | `3000` | Fall + fade duration |
+| `particleCount` | `120` | Piece count |
+| `originY` | `0.72` | Fraction down the container the burst originates from |
+| `inset` | `'-15% -10%'` | Canvas `inset` — negative values bleed past the container's own edges for a bigger-feeling burst |
+| `zIndex` | `2` | Stacking order relative to the container's other children — should sit **above** opaque content, not behind it |
+
+Calling `launch()` while a burst is already running stops the previous one first. `Confetti.stop()` cancels the animation and removes the canvas immediately (call this on cleanup — e.g. before closing a dialog, or when a new round starts).
+
+> **Rule of thumb:** don't pass custom `colors`/`durationMs`/`particleCount` per page just for variety's sake — the whole point is that a confetti burst looks and feels identical everywhere in the app. Only override `originY`/`inset` if a container's shape genuinely requires it.
+
 ---
 
-## 9. Image Conventions
+## 9. Sound Files
+
+All audio lives under `static/sounds/`. These are shared across the project — not specific to any single exercise.
+
+| Sound | Path | Used by |
+|-------|------|---------|
+| Correct answer | `static/sounds/correct.ogg` | Common Words, Fill-in-the-Blanks |
+| Incorrect answer | `static/sounds/incorrect.ogg` | Common Words, Fill-in-the-Blanks |
+| Applause | `static/sounds/applause.ogg` | Common Words (score dialog) |
+| Success | `static/sounds/success.ogg` | Common Words (score dialog) |
+| Word TTS | `static/sounds/<slug>-tts/<word>.mp3` | Fill-in-the-Blanks (see §14.14) |
+
+---
+
+## 10. Image Conventions
 
 | Rule | Detail |
 |------|--------|
 | **Format** | SVG preferred (scales cleanly). PNG/JPG fallback acceptable. |
-| **Directory** | All card images go in `.images/card-img/` |
+| **Directory** | All card images go in `static/images/card-img/` |
 | **Naming** | `kebab-case.svg` matching the exercise slug |
 | **Aspect ratio** | Display at 16:10 via `aspect-ratio` CSS property |
-| **Background** | Each card gets a soft gradient tint behind the image area (set in CSS) |
+| **Background** | None — the `object-fit: cover` image fills the 16:10 wrapper completely, so there is no tint behind it |
+
+### UI icons
+
+Monochrome SVG icons for button controls. They use CSS `mask-image` + `currentColor`, so they inherit the button’s text colour and stay readable on both light and dark button fills without separate assets.
+
+| Rule | Detail |
+|------|--------|
+| **Directory** | `static/images/icons/` |
+| **Format** | SVG, single-colour (black fill or stroke in the source file) |
+| **Naming** | `kebab-case.svg` (e.g. `speaker.svg`, `search.svg`) |
+| **Base class** | `.icon` in `style.css` |
+| **Modifiers** | `.icon--speaker`, `.icon--search`, etc. |
+| **Markup** | `<span class="icon icon--speaker" aria-hidden="true"></span>` — always pair with an `aria-label` on the parent `<button>` |
+
+**Available icons**
+
+| Modifier | Asset | Used by |
+|----------|-------|---------|
+| `.icon--speaker` | `static/images/icons/speaker.svg` | `.speak-button` (Common Words), `.fitb-hint-btn--listen` (“say it”) |
+| `.icon--search` | `static/images/icons/search.svg` | `.fitb-hint-btn--define` (“define it”) |
+
+**Examples**
+
+Icon-only listen button (Common Words):
+
+```html
+<button class="speak-button" type="button" aria-label="Listen to word 1">
+  <span class="icon icon--speaker" aria-hidden="true"></span>
+</button>
+```
+
+Icon + label hint button (Fill-in-the-Blanks):
+
+```html
+<button class="fitb-hint-btn fitb-hint-btn--listen" type="button">
+  <span class="icon icon--speaker" aria-hidden="true"></span> say it
+</button>
+<button class="fitb-hint-btn fitb-hint-btn--define" type="button">
+  <span class="icon icon--search" aria-hidden="true"></span> define it
+</button>
+```
+
+> **Rule of thumb:** do not use emoji for control icons. Add a new SVG to `static/images/icons/`, a matching `.icon--*` modifier in `style.css`, and a row in the table above.
 
 ---
 
-## 10. Responsive Breakpoints
+## 11. Responsive Breakpoints
 
 | Breakpoint | Columns | Notes |
 |------------|---------|-------|
@@ -267,7 +419,7 @@ Use `clamp()` for font sizes to scale smoothly between breakpoints.
 
 ---
 
-## 11. Accessibility
+## 12. Accessibility
 
 - Minimum contrast ratio **4.5:1** for body text (all muted text meets this on white).
 - All images require meaningful `alt` text.
@@ -277,7 +429,7 @@ Use `clamp()` for font sizes to scale smoothly between breakpoints.
 
 ---
 
-## 12. Adding a New Page
+## 13. Adding a New Page
 
 1. Create `new-page.html` and link `style.css`.
 2. Use the same `.page-wrapper` container and `.hero` header pattern.
@@ -294,7 +446,9 @@ learning-site/
 ├── style-guide.md
 └── static/
     └── images/
-        └── card-img/
+        ├── card-img/
+        │   └── *.svg
+        └── icons/
             └── *.svg
     └── sounds/
         └── *.ogg
@@ -302,7 +456,7 @@ learning-site/
 
 ---
 
-## 13. Fill-in-the-Blanks Category
+## 14. Fill-in-the-Blanks Category
 
 Shared components for every exercise page under `fill-in-the-blanks/`. Page files (e.g. `ending-l.html`) contain only a page shell and a small config object — no category-specific logic.
 
@@ -311,14 +465,15 @@ Shared components for every exercise page under `fill-in-the-blanks/`. Page file
 ```
 learning-site/
 ├── components/
+│   ├── confetti.js           ← shared celebration effect, used by FITB and Common Words (see §8.5)
 │   └── fill-in-the-blanks/
-│       ├── fitb.css          ← shared styles (header area, question card, word display,
-│       │                        loading skeleton, hint buttons, answer buttons, modal,
-│       │                        correct message)
+│       ├── fitb.css          ← shared styles (progress bar, question card, word display,
+│       │                        loading skeleton, hint buttons, answer buttons, modal)
 │       └── fitb.js           ← shared logic (load JSON, pick word, render UI, sounds,
 │                                check answers, game loop)
 ├── data-files/
-│   └── ending-l.json         ← word data (one file per exercise)
+│   ├── ending-l.json         ← word data (one file per exercise)
+│   └── fitb-scoring.json     ← shared round-end score bands (sound + confetti)
 ├── fill-in-the-blanks/
 │   ├── index.html            ← category landing page (card grid)
 │   └── ending-l.html         ← page shell + definitions modal shell + FITB.init() config only
@@ -332,10 +487,12 @@ learning-site/
 
 | File | Belongs here |
 |------|--------------|
+| `components/confetti.js` | Shared confetti effect — not FITB-specific, see §8.5 |
 | `fitb.css` | All visual styles for the game UI |
-| `fitb.js` | All reusable game logic (load JSON, generate spaced-repetition rounds, render UI, sounds, check answers, game loop, persistent stats); exposes `FITB.init({ dataFile, options })` |
+| `fitb.js` | All reusable game logic (load JSON, generate spaced-repetition rounds, render UI, sounds, check answers, game loop, persistent stats); exposes `FITB.init({ dataFile, options })`. Loads `components/confetti.js` as a dependency (script tag must come first) |
 | `data-files/<slug>.json` | Words, hidden-letter count, definitions exactly as they should appear in the modal (no answer options) |
-| `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tag for `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path and hardcoded `options` array |
+| `data-files/fitb-scoring.json` | Shared round-end score bands for every FITB page (see §14.11) |
+| `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tags for `confetti.js` then `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path and hardcoded `options` array. Do **not** `<link rel="preload" as="fetch">` the word JSON — `FITB.init()` fetches it on `DOMContentLoaded` after deferred scripts, so preload triggers an unused-resource warning |
 | `static/sounds/<data-file-name>-tts/` | Pre-recorded TTS audio per word |
 
 ### 13.2 Page Init API
@@ -369,7 +526,21 @@ The `.fitb-game` wrapper constrains both the question card and answer buttons to
 | Padding | `var(--space-xl)` (`2rem`) |
 | Box shadow | `var(--shadow-md)` |
 
-### 13.4 Word Display
+### 13.4 Progress Bar
+
+A segmented bar above the question card shows progress through the 10-word round. Each segment is filled in one of two colours so kids can see at a glance which words they nailed on the first try:
+
+| State | Class | Colour | Scale |
+|-------|-------|-------|------|
+| Empty | `.fitb-progress-segment` | `var(--color-border)` | 1.0 |
+| Got it after a mistake | `.fitb-progress-segment--filled` | `var(--color-accent-green)` (teal) | `scaleY(1.15)` |
+| First-guess correct | `.fitb-progress-segment--perfect` | `var(--color-accent-yellow)` (gold) | `scaleY(1.35)` + soft glow |
+
+The newest segment also gets `.fitb-progress-segment--new` for one render, which plays a short `fitb-segment-pop` bounce animation (disabled under `prefers-reduced-motion`). Older segments keep their colour but drop the `--new` class on the next `updateProgress()` call.
+
+`updateProgress(completedOverride, animate)` rebuilds the segment markup from `state.session.roundSummary.results[i]` (`'perfect'` → gold, anything else → teal), so the colours survive in-session advances but are not persisted — a page reload resets the colours because `roundSummary` lives only in memory (see §14.15).
+
+### 13.5 Word Display
 
 | Property | Value |
 |----------|-------|
@@ -382,9 +553,11 @@ The `.fitb-game` wrapper constrains both the question card and answer buttons to
 | Letter spacing (visible letters) | `0.08em` |
 | Blank class | `.fitb-blank` |
 | Blank letter spacing | `0.16em` |
-| Blank underline | `3px solid var(--color-primary)` |
+| Blank underline | none — blanks are the `_` character only (no border or box-shadow) |
 | Blank min width | `1.4ch` per hidden letter |
 | Blank color (unfilled) | `var(--color-primary-light)` |
+
+> **Layout stability:** do not add a blank underline via `border-bottom` (or any other box-model decoration). That would change the line-box height when blanks are replaced by letters on a correct answer, shrinking the question card and shifting the hint buttons.
 
 **Loading skeleton** (shown in the page shell until `FITB.init()` fetches and renders the word)
 
@@ -394,23 +567,24 @@ The `.fitb-game` wrapper constrains both the question card and answer buttons to
 | Skeleton blank class | `.fitb-skeleton-blank` |
 | Default skeleton | Five `<span class="fitb-skeleton-blank">_</span>` children (renders as `_____`) |
 | Skeleton blank min width | `1.4ch` (matches `.fitb-blank`) |
-| Skeleton underline | `3px solid var(--color-primary-light)` |
+| Skeleton underline | none (matches `.fitb-blank`) |
 | Skeleton color | `var(--color-primary-light)` on the container |
 | Animation | `fitb-skeleton-pulse` — opacity pulse `1.2s ease-in-out infinite` |
 | Stagger | `animation-delay` of `0.15s` per child (`nth-child(2)` through `nth-child(5)`) |
 | Accessibility | `aria-busy="true"` and `aria-label="Loading word"` on `#word-display` while loading; removed when the word is rendered |
 | Page shell | Every FITB page HTML includes the skeleton markup; `fitb.js` removes `.fitb-word-display--loading` when the word is ready |
 
-### 13.5 Hint Buttons
+### 13.6 Hint Buttons
 
-Two hint buttons per round: **Listen** (TTS) and **Definitions** (opens modal).
+Two hint buttons per round: **Listen** (TTS) and **Definitions** (opens modal). Each button shows a monochrome icon (see §10) before its label.
 
 | Property | Value |
 |----------|-------|
 | Container class | `.fitb-hint-buttons` |
 | Container layout | `display: flex; flex-wrap: nowrap; width: 100%; gap: var(--space-md)` |
 | Button class | `.fitb-hint-btn` |
-| Button layout | `flex: 1 1 0` (equal-width, single row) |
+| Button layout | `display: inline-flex; align-items: center; justify-content: center; gap: 0.4em; flex: 1 1 0` (equal-width, single row) |
+| Icon | `.icon--speaker` on listen, `.icon--search` on define (see §10) |
 | Font family | `var(--font-heading)` |
 | Font size | `clamp(1rem, 3.8vw, 1.25rem)` |
 | Font weight | `600` |
@@ -447,7 +621,16 @@ Two hint buttons per round: **Listen** (TTS) and **Definitions** (opens modal).
 | Transform | `translateY(0) scale(0.98)` |
 | Box shadow | `var(--shadow-sm)` |
 
-### 13.6 Parts-of-Speech Colour Palette
+**Colour variants** — the two hint buttons are functionally different (audio vs. definition), so each gets its own accent instead of sharing one purple treatment. This also reduces how purple-heavy the game screen feels.
+
+| Variant | Class | Icon | Border / text (default) | Hover background |
+|---------|-------|------|--------------------------|-------------------|
+| Listen | `.fitb-hint-btn--listen` | `.icon--speaker` | `var(--color-accent-pink-dark)` on `var(--color-accent-pink)` family | `var(--color-accent-pink)` |
+| Define | `.fitb-hint-btn--define` | `.icon--search` | `var(--color-accent-blue-dark)` on `var(--color-accent-blue)` family | `var(--color-accent-blue)` |
+
+> Default-state text/border colours are the darkened `--color-accent-*-dark` variants (see §2) to keep 4.5:1 contrast on white — the raw `--color-accent-pink` / `--color-accent-blue` values are too light to pass as text.
+
+### 13.7 Parts-of-Speech Colour Palette
 
 Used in the definitions modal for part-of-speech badges (`.fitb-pos-badge`).
 
@@ -464,7 +647,7 @@ Used in the definitions modal for part-of-speech badges (`.fitb-pos-badge`).
 
 Badge shape: `padding: 0.2rem 0.6rem`, `border-radius: var(--radius-sm)`, `font-size: 0.8rem`, `font-weight: 700`, `text-transform: lowercase`.
 
-### 13.7 Answer Buttons
+### 13.8 Answer Buttons
 
 | Property | Value |
 |----------|-------|
@@ -507,7 +690,7 @@ Badge shape: `padding: 0.2rem 0.6rem`, `border-radius: var(--radius-sm)`, `font-
 
 **Incorrect attempt feedback**
 
-An incorrect click does **not** disable any answer button. Instead, `fitb.js` plays `./static/sounds/incorrect.ogg` and applies a `fitb-shake` animation to `.fitb-word-display`.
+An incorrect click disables the tapped button (adds `.fitb-answer-btn--disabled`, opacity `0.45`, no pointer events) so the player cannot choose the same wrong answer again. `fitb.js` also plays `./static/sounds/incorrect.ogg` and applies a `fitb-shake` animation to `.fitb-word-display`.
 
 **Disabled state** (class `.fitb-answer-btn--disabled`)
 
@@ -516,24 +699,13 @@ An incorrect click does **not** disable any answer button. Instead, `fitb.js` pl
 | Opacity | `0.45` |
 | Pointer events | `none` |
 
-### 13.8 Correct-Answer Message
+### 13.9 Correct-Answer Feedback
 
-Shown after a correct answer, above the answer buttons.
+Correct answers are communicated by **`correct.ogg` alone** — there is no on-screen message. `fitb.js` locks the answer buttons (`.fitb-answer-btn--correct` / `--disabled`, see §14.8), plays the sound, and advances after `ROUND_ADVANCE_MS`.
 
-| Property | Value |
-|----------|-------|
-| Class | `.fitb-correct-message` |
-| Font family | `var(--font-heading)` |
-| Font size | `1.25rem` |
-| Font weight | `700` |
-| Color | `var(--color-accent-green)` |
-| Text align | `center` |
-| Padding | `var(--space-md) 0` |
-| Animation | `fadeInUp 0.4s var(--ease-bounce)` |
+> There used to be a `#correct-message` element ("Great job! ✨" etc.) here. It was removed rather than fixed: reserving layout space for it was solving a self-inflicted problem, and a distinct correct-answer sound is a clearer, faster signal for kids mid-game than text they have to read. If a visual acknowledgement is wanted again later, prefer something that doesn't participate in document flow at all (e.g. a brief overlay/toast) over reintroducing a block-level element above the buttons.
 
-Default text: **"Great job! ✨"**
-
-### 13.9 Definitions Modal
+### 13.10 Definitions Modal
 
 Native `<dialog>` element using the shared `.app-dialog` shell from `style.css`.
 
@@ -551,7 +723,67 @@ Native `<dialog>` element using the shared `.app-dialog` shell from `style.css`.
 
 **Close button** (`.dialog-close`): shared close button used by both Common Words and FITB dialogs.
 
-### 13.10 Sound File Convention
+### 13.11 Round-End Scoring
+
+When all 10 words in a round are answered, `fitb.js` scores the round by counting **first-guess correct** answers (`state.session.roundSummary.firstGuessCorrectCount`): a word counts only if the player taps the right answer on the first try for that word. A wrong tap disqualifies that word from the score even if they get it right afterward.
+
+Bands are loaded from `data-files/fitb-scoring.json` (shared across all FITB exercises). `getScoreBand(score)` sorts bands by `maxCorrect` ascending and returns the first band where `score <= maxCorrect`.
+
+| Band id | `maxCorrect` | Score range (out of 10) | Sound | Confetti |
+|---------|--------------|-------------------------|-------|----------|
+| `low` | 4 | 0–4 | none | no |
+| `good` | 8 | 5–8 | `applause` | no |
+| `excellent` | 10 | 9–10 | `success` | yes |
+
+> **Rule of thumb:** tune celebration intensity in `fitb-scoring.json`, not in page files. Confetti only fires when the matched band has `"confetti": true` (currently the `excellent` band only).
+
+### 13.12 Round-End Actions
+
+Shown once a round finishes (see §14.11 for scoring sounds; §14.13 for confetti). Two buttons: **Take a break** (exit) and **Continue** (start another round). These are deliberately *not* styled the same — Continue is the primary/heavier action, Take a break is a low-emphasis secondary action — so they read as two different choices rather than a coin flip.
+
+| Property | Value |
+|----------|-------|
+| Container class | `.fitb-round-actions` |
+| Container layout | `display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: var(--space-md)` |
+| Spacing below question card | Same as answer buttons — only `.fitb-game`'s `gap: var(--space-xl)`; no extra container padding or min-height |
+| Shared button shape | `.fitb-round-actions .btn` — pill (`border-radius: 999px`), `min-height: 3rem`, `font-family: var(--font-heading)`, `font-size: 1.05rem`, `font-weight: 600` |
+
+**Primary — Continue** (`.fitb-continue-btn`)
+
+| Property | Value |
+|----------|-------|
+| Label | "Continue" |
+| Background | `var(--color-accent-green)` (matches the correct-answer colour, signals "more success ahead") |
+| Color | `#fff` |
+| Box shadow | `0 4px 16px rgba(0,206,201,0.35)` |
+| Hover | Background `var(--color-accent-green-dark)`, `shadow-pop`, `translateY(-2px) scale(1.04)` |
+| Auto-advance fill | `.fitb-continue-btn--filling::before` — a `rgba(255,255,255,0.3)` sweep (not a colour swap) animates `scaleX` `0 → 1` over `8s linear`, matching `ROUND_AUTO_ADVANCE_MS` in `fitb.js` |
+
+**Secondary — Take a break** (`.fitb-break-btn`)
+
+| Property | Value |
+|----------|-------|
+| Label | "Take a break" (previously "I'm done for today" — shorter, warmer, less like a commitment) |
+| Background | `transparent` |
+| Color | `var(--color-text-muted)` |
+| Border | `2px solid var(--color-border)` |
+| Box shadow | `none` |
+| Hover | Background `var(--color-bg)`, color `var(--color-text)`, border `var(--color-text-muted)`, `shadow-sm`, `translateY(-1px)` |
+
+> **Rule of thumb:** in any pair of "exit" vs. "keep going" actions, the keep-going action gets the filled/coloured treatment and the exit action gets the ghost/outline treatment. Never give both the same background colour.
+
+### 13.13 Confetti
+
+Uses the shared `Confetti` component — see §8.5 for the full spec. FITB does not implement its own confetti; `fitb.js` just calls it.
+
+| Property | Value |
+|----------|-------|
+| Trigger | Round finishes and the scoring band from §14.11 has `"confetti": true` (currently **9–10 first-guess correct** out of 10, i.e. the `excellent` band in `fitb-scoring.json`) |
+| Container | `.fitb-game` — the whole game wrapper, so the burst covers the question card, progress bar, and round-end actions |
+| Options passed | None — FITB uses the shared component's defaults so the celebration looks identical to Common Words' (see §8.5's rule of thumb) |
+| Cleanup | `Confetti.stop()` is called when the next round loads (`loadNextRound()`) and when "Take a break" is pressed, so a burst never keeps animating after the user has moved on |
+
+### 13.14 Sound File Convention
 
 All audio lives under `./static/sounds/`.
 
@@ -561,12 +793,12 @@ All audio lives under `./static/sounds/`.
 | Incorrect answer | `./static/sounds/incorrect.ogg` |
 | Word TTS | `./static/sounds/<data-file-name>-tts/<word>.mp3` |
 
-**TTS folder naming:** strip the `.json` extension from the data file name.  
+**TTS folder naming:** strip the `.json` extension from the data file name.
 Example: `data-files/ending-l.json` → TTS files at `./static/sounds/ending-l-tts/couple.mp3`, `./static/sounds/ending-l-tts/double.mp3`, etc.
 
 Playback is triggered by `fitb.js`; pages do not reference sound paths directly.
 
-### 13.11 Spaced-Repetition Progress
+### 13.15 Spaced-Repetition Progress
 
 `fitb.js` uses a two-tier storage model: long-lived per-word stats in `localStorage`, and the in-progress 10-word round in `sessionStorage`. Word pools are 30–150 words; rounds are always up to 10 words (fewer only if the pool itself is smaller).
 
@@ -617,19 +849,31 @@ A word with `seen === 0` is always due, regardless of box.
 3. Build a 10-word list: up to 6 random from priority, fill from review, then backfill by most-overdue (`roundNumber - lastRound - requiredInterval`, descending) if still short.
 4. Fisher–Yates shuffle; `saveStats(stats)`; `saveCurrentRound({ words, index: 0 })`; return the round.
 
+#### In-memory state model
+
+`fitb.js` keeps all non-persisted runtime state under a single `state` object, grouped by ownership:
+
+| Section | Fields | Purpose |
+|---------|--------|---------|
+| `state.data` | `dataFile`, `wordData`, `scoringData` | Loaded JSON files |
+| `state.session` | `roundActive`, `currentPrompt` (`word` / `definitions` / `hiddenLetters`), `roundSummary` (`hadMistakeThisWord` / `firstGuessCorrectCount` / `results`) | The current word and round flow |
+| `state.ui` | wiring flags, `advanceTimeout` / `autoAdvanceTimeout`, `definitionsModal`, `currentTtsAudio` | DOM handles and runtime timers |
+
+`currentPrompt` consolidates the previous `currentWord` / `currentDefinitions` / `currentHiddenLetters` trio so the active word is one object. `roundSummary` consolidates the per-round scoring flags and the `results` array that drives the dual-colour progress bar (§14.4). `feedbackSounds` remains a module-level cache outside `state` since it has no per-session lifecycle.
+
 #### Loading a word (`loadRound()`)
 
-1. Reset `hadMistakeThisWord = false`.
-2. `getCurrentRound()`; if `null`, call `generateRound()`.
-3. Set `currentWord` to `round.words[round.index]` and render as before.
+1. Reset `state.session.roundSummary.hadMistakeThisWord = false`.
+2. `getCurrentRound()`; if `null`, call `generateRound()` (which also resets `state.session.roundSummary = { hadMistakeThisWord: false, firstGuessCorrectCount: 0, results: new Array(ROUND_SIZE).fill(null) }`).
+3. Set `state.session.currentPrompt` from `wordData[round.words[round.index]]` and render as before.
 
 #### Answering (`handleAnswerClick`)
 
-- **Incorrect** — play incorrect feedback; set `hadMistakeThisWord = true` (word stays active).
-- **Correct** — update that word’s stats: on mistake this attempt `box = max(0, box - 1)`, else `box = min(3, box + 1)`; set `lastRound = stats.roundNumber`; increment `seen`; `saveStats`. Then advance the round: `index += 1`; if `index < 10`, `saveCurrentRound`; if `index === 10`, `clearCurrentRound` (next `loadRound` generates a new round). Existing `ROUND_ADVANCE_MS` timeout still calls `loadRound()`.
+- **Incorrect** — play incorrect feedback; set `state.session.roundSummary.hadMistakeThisWord = true` (word stays active).
+- **Correct** — update that word’s stats: on mistake this attempt `box = max(0, box - 1)`, else `box = min(3, box + 1)` and increment `state.session.roundSummary.firstGuessCorrectCount`; set `lastRound = stats.roundNumber`; increment `seen`; `saveStats`. Then record `state.session.roundSummary.results[slot]` (`'perfect'` if first-guess, else `'helped'`) using the slot *before* incrementing, advance the round (`index += 1`; if `index < 10`, `saveCurrentRound`; if `index === 10`, `clearCurrentRound`), and call `updateProgress(round.index, true)` so the new segment animates in (§14.4). Existing `ROUND_ADVANCE_MS` timeout still calls `loadRound()`.
 
 Reads/writes are wrapped in `try/catch` so blocked storage never breaks the game. Clearing `fitb-stats:<slug>` resets long-term progress; clearing `fitb-round:<slug>` (or closing the tab) only drops the in-progress round.
 
 ---
 
-*Last updated: August 2026*
+*Last updated: August 2026 (§14.4 progress bar dual-colour; §14.15 in-memory `state` model)*
