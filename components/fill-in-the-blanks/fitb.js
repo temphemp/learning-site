@@ -679,6 +679,30 @@ const FITB = (() => {
   }
 
   /**
+   * Sort candidates by overdue descending, shuffling within equal-overdue
+   * groups so ties do not follow Object.keys / JSON insertion order.
+   * @param {Array<{ word: string, overdue: number }>} candidates
+   * @returns {Array<{ word: string, overdue: number }>}
+   */
+  function sortByOverdueWithRandomTies(candidates) {
+    shuffleInPlace(candidates);
+    return candidates.sort((a, b) => b.overdue - a.overdue);
+  }
+
+  /**
+   * @param {string[]} selected
+   * @param {Set<string>} selectedSet
+   * @param {string[]} pool
+   * @param {number} need
+   */
+  function appendPicked(selected, selectedSet, pool, need) {
+    for (const word of pickRandomUnique(pool, need)) {
+      selected.push(word);
+      selectedSet.add(word);
+    }
+  }
+
+  /**
    * @returns {{ words: string[], index: number }}
    */
   function generateRound() {
@@ -694,40 +718,43 @@ const FITB = (() => {
     /** @type {string[]} */
     const review = [];
 
-    for (const word of Object.keys(state.data.wordData)) {
-      const wordStats = getWordStats(stats, word);
-      if (!isWordDue(wordStats, roundNumber)) {
-        continue;
-      }
-
-      if (wordStats.seen === 0 || wordStats.box === 0 || wordStats.box === 1) {
-        priority.push(word);
-      } else if (wordStats.box === 2 || wordStats.box === 3) {
-        review.push(word);
-      }
-    }
+    console.log(`--- generateRound() round ${roundNumber} — ${Object.keys(state.data.wordData).length} total words ---`);
 
     const selected = pickRandomUnique(priority, 6);
     const selectedSet = new Set(selected);
 
-    const reviewPool = review.filter((word) => !selectedSet.has(word));
-    for (const word of pickRandomUnique(reviewPool, ROUND_SIZE - selected.length)) {
-      selected.push(word);
-      selectedSet.add(word);
+    appendPicked(
+      selected,
+      selectedSet,
+      review.filter((word) => !selectedSet.has(word)),
+      ROUND_SIZE - selected.length,
+    );
+
+    if (selected.length < ROUND_SIZE) {
+      const leftoverDue = [...priority, ...review].filter(
+        (word) => !selectedSet.has(word),
+      );
+      appendPicked(
+        selected,
+        selectedSet,
+        leftoverDue,
+        ROUND_SIZE - selected.length,
+      );
     }
 
     if (selected.length < ROUND_SIZE) {
-      const backfill = Object.keys(state.data.wordData)
-        .filter((word) => !selectedSet.has(word))
-        .map((word) => {
-          const wordStats = getWordStats(stats, word);
-          return {
-            word,
-            overdue:
-              roundNumber - wordStats.lastRound - getDueInterval(wordStats.box),
-          };
-        })
-        .sort((a, b) => b.overdue - a.overdue);
+      const backfill = sortByOverdueWithRandomTies(
+        Object.keys(state.data.wordData)
+          .filter((word) => !selectedSet.has(word))
+          .map((word) => {
+            const wordStats = getWordStats(stats, word);
+            return {
+              word,
+              overdue:
+                roundNumber - wordStats.lastRound - getDueInterval(wordStats.box),
+            };
+          }),
+      );
 
       for (const { word } of backfill) {
         if (selected.length >= ROUND_SIZE) {
@@ -739,6 +766,13 @@ const FITB = (() => {
     }
 
     shuffleInPlace(selected);
+
+    console.log(`\n--- Round ${roundNumber} (${selected.length} words) ---`);
+    for (const w of selected) {
+      const ws = getWordStats(stats, w);
+      console.log(`  "${w}"\tseen: ${ws.seen === 0 ? 'NEW' : ws.seen}\tbox: ${ws.box}\tcategory: ${ws.box <= 1 ? 'priority' : 'review'}`);
+    }
+    console.log('---\n');
 
     saveStats(stats);
 

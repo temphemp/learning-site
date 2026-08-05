@@ -904,7 +904,7 @@ A word with `seen === 0` is always due, regardless of box.
 
 1. `getStats()` and increment `roundNumber` by 1.
 2. Collect due words; split into **priority** (`box` 0 or 1, or `seen === 0`) and **review** (`box` 2 or 3).
-3. Build a 10-word list: up to 6 random from priority, fill from review, then backfill by most-overdue (`roundNumber - lastRound - requiredInterval`, descending) if still short.
+3. Build a 10-word list: up to 6 random from priority, fill from review, then (if still short) random leftover due words (priority ∪ review not yet selected), then backfill by most-overdue (`roundNumber - lastRound - requiredInterval`, descending) with equal-overdue ties broken randomly (shuffle before a stable sort) so shortfalls do not follow JSON key order.
 4. Fisher–Yates shuffle; `saveStats(stats)`; `saveCurrentRound({ words, index: 0 })`; return the round.
 
 #### In-memory state model
