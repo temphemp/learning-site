@@ -90,6 +90,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   /* Keep scroll position stable while the sticky header changes height. */
   overflow-anchor: none;
@@ -177,9 +178,9 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   backdrop-filter: blur(12px) saturate(130%);
   -webkit-backdrop-filter: blur(12px) saturate(130%);
   contain: layout style;
-  will-change: padding, box-shadow;
-  transition: padding 0.42s ease, border-radius 0.42s ease,
-              box-shadow 0.42s ease;
+  /* Prefer cheaper compositor-friendly props; padding remains for height collapse. */
+  transition: padding 0.42s ease, box-shadow 0.42s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hero.is-collapsed {
@@ -187,6 +188,23 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   /* A finite radius avoids the delayed, clamped animation of 999px. */
   border-radius: 2rem;
   box-shadow: 0 6px 20px rgba(88, 75, 170, 0.2);
+}
+
+/* Scoped only while the collapse/expand transition is in flight (see learning-header.js). */
+.hero.is-animating {
+  will-change: padding, box-shadow;
+}
+
+.hero.is-animating .hero-title {
+  will-change: transform;
+}
+
+.hero.is-animating .hero-subtitle {
+  will-change: max-height, opacity, transform;
+}
+
+.hero.is-animating .hero-bubbles {
+  will-change: opacity;
 }
 
 .hero-title {
@@ -197,7 +215,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   text-shadow: 0 2px 8px rgba(0,0,0,0.12);
   position: relative;
   z-index: 2;
-  will-change: transform;
   transition: transform 0.42s ease;
 }
 
@@ -217,7 +234,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   z-index: 2;
   max-height: 4rem;
   overflow: hidden;
-  will-change: max-height, opacity, transform;
   transition: max-height 0.32s ease, margin 0.32s ease, opacity 0.22s ease, transform 0.32s ease;
 }
 
@@ -234,7 +250,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  will-change: opacity;
   transition: opacity 0.25s ease;
 }
 
@@ -246,7 +261,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   position: absolute;
   border-radius: var(--radius-full);
   background: rgba(255,255,255,0.18);
-  will-change: transform;
   transform: translateZ(0);
   animation: float 6s ease-in-out infinite;
 }
@@ -280,17 +294,13 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
               box-shadow var(--transition-base),
               border-color var(--transition-base);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .exercise-card-link {
   color: inherit;
   text-decoration: none;
-}
-
-.exercise-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: var(--shadow-pop);
-  border-color: var(--color-primary-light);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .exercise-card:active {
@@ -314,8 +324,16 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   transition: transform var(--transition-base);
 }
 
-.exercise-card:hover .card-image {
-  transform: scale(1.08);
+@media (hover: hover) and (pointer: fine) {
+  .exercise-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-pop);
+    border-color: var(--color-primary-light);
+  }
+
+  .exercise-card:hover .card-image {
+    transform: scale(1.08);
+  }
 }
 
 /* Card body */
@@ -454,6 +472,7 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   background: var(--color-accent-pink);
   box-shadow: var(--shadow-md);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: transform var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
 }
 
@@ -462,7 +481,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   height: 1.35rem;
 }
 
-.speak-button:hover,
 .speak-button:focus-visible {
   background: var(--color-accent-pink-dark);
   box-shadow: var(--shadow-pop);
@@ -476,6 +494,14 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   transform: scale(0.96);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .speak-button:hover {
+    background: var(--color-accent-pink-dark);
+    box-shadow: var(--shadow-pop);
+    transform: translateY(-2px) scale(1.07);
+  }
+}
+
 .word-answer {
   grid-column: 3;
   grid-row: 1;
@@ -485,6 +511,12 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   font-weight: 600;
   letter-spacing: 0.03em;
   text-align: center;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-character: "-";
+  -webkit-hyphenate-character: "-";
 }
 
 .answer-actions {
@@ -508,12 +540,22 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   font-size: 1.35rem;
   font-weight: 700;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
   transition: transform var(--transition-base), background-color var(--transition-base), color var(--transition-base), opacity var(--transition-base);
 }
 
-.answer-choice:hover,
 .answer-choice:focus-visible {
   transform: scale(1.1);
+}
+
+.answer-choice:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .answer-choice:hover {
+    transform: scale(1.1);
+  }
 }
 
 .answer-choice--correct {
@@ -581,14 +623,30 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   font-family: var(--font-heading);
   font-size: 1.05rem;
   font-weight: 600;
-  transition: all var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-base),
+              background-color var(--transition-base),
+              box-shadow var(--transition-base),
+              color var(--transition-base);
 }
 
-.btn:hover,
 .btn:focus-visible {
   background: var(--color-primary-dark);
   box-shadow: var(--shadow-pop);
   transform: translateY(-2px) scale(1.04);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: var(--color-primary-dark);
+    box-shadow: var(--shadow-pop);
+    transform: translateY(-2px) scale(1.04);
+  }
 }
 
 .btn:disabled {
@@ -607,7 +665,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   background: var(--color-accent-pink);
 }
 
-.btn--pink:hover,
 .btn--pink:focus-visible {
   background: var(--color-accent-pink-dark);
 }
@@ -616,7 +673,6 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   background: var(--color-accent-green);
 }
 
-.btn--green:hover,
 .btn--green:focus-visible {
   background: var(--color-accent-green-dark);
 }
@@ -626,9 +682,22 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   color: var(--color-text);
 }
 
-.btn--yellow:hover,
 .btn--yellow:focus-visible {
   background: var(--color-accent-yellow-dark);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--pink:hover {
+    background: var(--color-accent-pink-dark);
+  }
+
+  .btn--green:hover {
+    background: var(--color-accent-green-dark);
+  }
+
+  .btn--yellow:hover {
+    background: var(--color-accent-yellow-dark);
+  }
 }
 
 .app-dialog {
@@ -636,6 +705,7 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   inset: 0;
   width: min(90vw, 32rem);
   max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   margin: auto;
   overflow: auto;
   border: 2px solid var(--color-primary-light);
@@ -712,12 +782,25 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   cursor: pointer;
   font-size: 1.5rem;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--transition-base), background-color var(--transition-base);
 }
 
-.dialog-close:hover,
 .dialog-close:focus-visible {
   color: #fff;
   background: var(--color-accent-pink);
+}
+
+.dialog-close:active {
+  color: #fff;
+  background: var(--color-accent-pink-dark);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dialog-close:hover {
+    color: #fff;
+    background: var(--color-accent-pink);
+  }
 }
 
 .sr-only {
@@ -738,7 +821,7 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
   }
 
   .word-item {
-    --word-control-size: 2.5rem;
+    /* Keep the 44px floor (--word-control-size stays 2.75rem) for touch targets. */
     grid-template-columns: var(--word-control-size) auto minmax(5rem, 1fr);
     min-height: 4rem;
     padding: var(--space-sm);
@@ -750,6 +833,10 @@ learning-header[data-collapse-mode="collapsed-only"] .hero {
 
   .exercise-intro {
     font-size: 1rem;
+  }
+
+  .word-answer {
+    font-size: clamp(1.15rem, 2.8vw, 1.35rem);
   }
 }
 

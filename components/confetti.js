@@ -29,6 +29,9 @@
  *
  * Only one burst can be active at a time; calling launch() while a burst is
  * already running stops the previous one first.
+ *
+ * Respects `prefers-reduced-motion: reduce` — launch() becomes a no-op so
+ * celebration pages stay calm when the user has asked for less motion.
  */
 const Confetti = (() => {
   const DEFAULTS = {
@@ -70,6 +73,10 @@ const Confetti = (() => {
     stop();
 
     if (!(container instanceof HTMLElement)) {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 

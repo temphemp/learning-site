@@ -165,7 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
     answersRevealed = true;
     tallyButton.disabled = false;
     preloadSounds('correct', 'incorrect', 'applause', 'success');
-    wordList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    wordList.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    });
   });
 
   tallyButton.addEventListener('click', () => {
@@ -192,7 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const firstUnmarkedItem = unmarkedItems[0];
-      firstUnmarkedItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstUnmarkedItem.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'center',
+      });
       firstUnmarkedItem.focus({ preventScroll: true });
       return;
     }

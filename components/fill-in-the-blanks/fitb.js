@@ -1016,8 +1016,43 @@ const FITB = (() => {
       return;
     }
 
-    buttons[0].addEventListener('click', playWordTts);
-    buttons[1].addEventListener('click', showDefinitionsModal);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const TAPPED_DURATION_MS = 500;
+    /** @type {ReturnType<typeof setTimeout> | null} */
+    let tappedTimeout = null;
+
+    /**
+     * Adds the tapped class to trigger the full animation on touch devices.
+     * @param {HTMLElement} button
+     */
+    function handleTapAnimation(button) {
+      if (!isTouchDevice) return;
+
+      // Clear any existing timeout to handle rapid taps
+      if (tappedTimeout) {
+        clearTimeout(tappedTimeout);
+      }
+
+      // Add the tapped class to start the animation
+      button.classList.add('fitb-hint-btn--tapped');
+
+      // Remove the class after the animation duration
+      tappedTimeout = setTimeout(() => {
+        button.classList.remove('fitb-hint-btn--tapped');
+        tappedTimeout = null;
+      }, TAPPED_DURATION_MS);
+    }
+
+    buttons[0].addEventListener('click', (e) => {
+      handleTapAnimation(buttons[0]);
+      playWordTts(e);
+    });
+
+    buttons[1].addEventListener('click', (e) => {
+      handleTapAnimation(buttons[1]);
+      showDefinitionsModal(e);
+    });
+
     state.ui.hintButtonsWired = true;
   }
 

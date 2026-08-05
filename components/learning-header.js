@@ -56,6 +56,7 @@ class LearningHeader extends HTMLElement {
     this.isTransitionLocked = false;
     this.pendingAutoSync = false;
     this.transitionFallbackTimeout = null;
+    this.scrollRafId = null;
   }
 
   get collapseMode() {
@@ -149,6 +150,7 @@ class LearningHeader extends HTMLElement {
     this.isTransitionLocked = true;
     this.pendingAutoSync = false;
     clearTimeout(this.transitionFallbackTimeout);
+    this.hero?.classList.add('is-animating');
 
     // Keep scroll-driven updates from oscillating while the hero is animating.
     this.transitionFallbackTimeout = setTimeout(() => {
@@ -160,6 +162,7 @@ class LearningHeader extends HTMLElement {
     this.isTransitionLocked = false;
     clearTimeout(this.transitionFallbackTimeout);
     this.transitionFallbackTimeout = null;
+    this.hero?.classList.remove('is-animating');
 
     if (this.pendingAutoSync) {
       this.pendingAutoSync = false;
@@ -182,6 +185,15 @@ class LearningHeader extends HTMLElement {
     }
   }
 
+  scheduleScrollSync() {
+    if (this.scrollRafId !== null) return;
+
+    this.scrollRafId = this.ownerDocument.defaultView.requestAnimationFrame(() => {
+      this.scrollRafId = null;
+      this.syncCollapsedFromScroll();
+    });
+  }
+
   bindInteractions() {
     if (this.abortController || this.isCollapsedOnly) return;
 
@@ -189,7 +201,7 @@ class LearningHeader extends HTMLElement {
     const { signal } = this.abortController;
 
     this.ownerDocument.defaultView.addEventListener('scroll', () => {
-      this.syncCollapsedFromScroll();
+      this.scheduleScrollSync();
     }, { passive: true, signal });
 
     this.hero.addEventListener('click', () => {
@@ -216,6 +228,13 @@ class LearningHeader extends HTMLElement {
     this.pendingAutoSync = false;
     clearTimeout(this.transitionFallbackTimeout);
     this.transitionFallbackTimeout = null;
+
+    if (this.scrollRafId !== null) {
+      this.ownerDocument.defaultView.cancelAnimationFrame(this.scrollRafId);
+      this.scrollRafId = null;
+    }
+
+    this.hero?.classList.remove('is-animating');
   }
 }
 

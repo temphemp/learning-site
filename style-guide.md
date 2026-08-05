@@ -159,13 +159,39 @@ Use tinted shadows (purple/pink) instead of plain grey for a more colourful feel
 
 ### Patterns
 
-- **Card hover:** `translateY(-6px) scale(1.02)` + `shadow-pop` + border colour change
+- **Card hover:** `translateY(-6px) scale(1.02)` + `shadow-pop` + border colour change (fine-pointer / hover-capable only)
 - **Card press:** `translateY(-2px) scale(0.99)`
-- **Image zoom on card hover:** `scale(1.08)` inside overflow hidden wrapper
+- **Image zoom on card hover:** `scale(1.08)` inside overflow hidden wrapper (fine-pointer / hover-capable only)
 - **Hero bubbles:** gentle `translateY` float animation, staggered delays
-- **Page load:** cards fade in and slide up with staggered timing (see `script.js`)
+- **Page load:** cards fade in and slide up with staggered timing (see `script.js`); skipped when `prefers-reduced-motion: reduce`
 
-> **Rule of thumb:** Keep animations under 500 ms. Use bounce easing for playful motion. Never animate in a way that could cause discomfort.
+> **Rule of thumb:** Keep animations under 500 ms. Use bounce easing for playful motion. Never animate in a way that could cause discomfort. Prefer property-specific `transition` lists over `transition: all`.
+
+### 7.1 Mobile Touch, Motion Preferences & Performance
+
+Apply these rules on every new page and component so touch and motion behaviour stay consistent:
+
+| Topic | Rule |
+|-------|------|
+| **Hover vs touch** | Put hover-only visual effects inside `@media (hover: hover) and (pointer: fine)`. Keep `:focus-visible` and `:active` / selected / pressed states outside that query so keyboard and touch still get clear feedback. |
+| **Sticky hover** | Never rely on `:hover` alone for pressed feedback on touch — pair interactive controls with an explicit `:active` or selected state. |
+| **Reduced motion** | Treat `prefers-reduced-motion: reduce` as authoritative for **CSS and JS**. Skip entrance staggers, confetti, and other decorative motion; use instant `scrollIntoView` (`behavior: 'auto'`) instead of smooth scrolling. |
+| **Touch targets** | Keep primary controls at least **44×44 px** (`2.75rem`). Do not shrink `--word-control-size` below that floor at the mobile breakpoint. |
+| **Tap highlight** | Set `-webkit-tap-highlight-color` on true interactive elements (cards, buttons, answer choices) only — not a global `*` reset. Pair with clear `:active` styling. |
+| **Full animation on tap** | When an element has a hover animation that should also play on touch, use JavaScript to detect touch devices (`'ontouchstart' in window \|\| navigator.maxTouchPoints > 0`) and apply a temporary class (e.g., `.tapped`) on `click`. Remove the class after the animation duration (typically 500ms) via `setTimeout`. This ensures the full animation plays even with a quick tap. Keep the class styles outside `@media (hover: hover)` so they're always available. |
+| **Scroll work** | Throttle scroll listeners with `requestAnimationFrame`. Do not run layout/paint work on every raw scroll event. |
+| **`will-change`** | Do not leave `will-change` on base rules permanently. Add it just before a known transition and clear it afterward. |
+| **Viewport height** | Prefer layered `100vh` then `100dvh` (or `calc(100vh - …)` / `calc(100dvh - …)`) for fixed/sticky sizing so mobile browser chrome does not clip dialogs. |
+| **Long words on mobile** | When a tight mobile grid can squeeze text columns, set `overflow-wrap: break-word`, `word-break: break-word`, and `hyphens: auto` (with `-webkit-hyphens: auto`) on the text element so long words wrap cleanly with a trailing `-`. Combine with a mobile-only font-size reduction (e.g. `clamp(1.15rem, 2.8vw, 1.35rem)`) to keep most words on one line while the hyphenation handles the rest. Always keep the mobile minimum above `1rem` for readability. |
+
+**Verification checklist (before shipping a mobile-facing change):**
+
+- [ ] No sticky hover after tap on iOS/Android
+- [ ] Reduced-motion disables both CSS and JS motion (including confetti and smooth scroll)
+- [ ] Primary touch targets remain ≥ 44 px
+- [ ] Sticky header stays smooth during momentum scroll on a mid-range phone
+- [ ] Dialogs do not clip when browser chrome shows/hides
+- [ ] Long words in tight grids hyphenate and wrap cleanly on 320 px screens (no horizontal overflow)
 
 ---
 
@@ -206,9 +232,11 @@ the `title` and `subtitle` attributes:
 ```
 
 The component lives in `components/learning-header.js` and includes the
-collapsible interaction, keyboard controls, decorative bubbles, and a
+collapsible interaction, keyboard controls, decorative bubbles, a
+`requestAnimationFrame`-throttled scroll listener, and a
 transition lock/hysteresis guard so scroll-based state changes do not visibly
-oscillate while the hero is animating.
+oscillate while the hero is animating. `will-change` is applied only while the
+hero carries `.is-animating` during a collapse/expand transition.
 
 #### Collapse modes
 
@@ -268,13 +296,24 @@ should use `collapse-mode`.
   background: var(--color-primary);
   color: #fff;
   box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
+  transition: transform var(--transition-base),
+              background-color var(--transition-base),
+              box-shadow var(--transition-base),
+              color var(--transition-base);
 }
 
-.btn:hover {
+.btn:focus-visible {
   transform: translateY(-2px) scale(1.04);
   box-shadow: var(--shadow-pop);
   background: var(--color-primary-dark);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: var(--shadow-pop);
+    background: var(--color-primary-dark);
+  }
 }
 ```
 
@@ -296,7 +335,7 @@ Use the native `<dialog>` element with the reusable `.app-dialog` shell on any p
 |----------|-------|
 | Base class | `.app-dialog` |
 | Width | `min(90vw, 32rem)` |
-| Max height | `calc(100vh - 2rem)` |
+| Max height | `calc(100vh - 2rem)` with `calc(100dvh - 2rem)` override |
 | Background | `var(--color-surface)` |
 | Border | `2px solid var(--color-primary-light)` |
 | Border radius | `var(--radius-md)` |
@@ -333,6 +372,8 @@ A single, dependency-free celebration effect used by **every** page that wants a
 | `zIndex` | `2` | Stacking order relative to the container's other children — should sit **above** opaque content, not behind it |
 
 Calling `launch()` while a burst is already running stops the previous one first. `Confetti.stop()` cancels the animation and removes the canvas immediately (call this on cleanup — e.g. before closing a dialog, or when a new round starts).
+
+`Confetti.launch()` is a no-op when `prefers-reduced-motion: reduce` is set (see §7.1).
 
 > **Rule of thumb:** don't pass custom `colors`/`durationMs`/`particleCount` per page just for variety's sake — the whole point is that a confetti burst looks and feels identical everywhere in the app. Only override `originY`/`inset` if a container's shape genuinely requires it.
 
@@ -424,8 +465,10 @@ Use `clamp()` for font sizes to scale smoothly between breakpoints.
 - Minimum contrast ratio **4.5:1** for body text (all muted text meets this on white).
 - All images require meaningful `alt` text.
 - Interactive cards should be reachable and activatable via keyboard.
-- Animations respect `prefers-reduced-motion` (add a media query when enhancing).
+- Animations respect `prefers-reduced-motion` in both CSS **and** JS (see §7.1).
 - Font sizes never go below `0.85rem`.
+- Primary interactive controls meet a **44×44 px** minimum touch target (see §7.1).
+- Long words in tight grids use `overflow-wrap: break-word`, `word-break: break-word`, and `hyphens: auto` so they wrap cleanly with a trailing `-` instead of overflowing (see §7.1).
 
 ---
 
@@ -621,14 +664,29 @@ Two hint buttons per round: **Listen** (TTS) and **Definitions** (opens modal). 
 | Transform | `translateY(0) scale(0.98)` |
 | Box shadow | `var(--shadow-sm)` |
 
+**Tapped state (mobile only)**
+
+Applied via JavaScript on touch devices to play the full animation even when the user lifts their finger immediately. Mirrors the hover state so mobile users get the same visual feedback as desktop hover. The class `.fitb-hint-btn--tapped` is added on `click` and removed after 500ms.
+
+| Property | Value |
+|----------|-------|
+| Background | `var(--color-primary-light)` |
+| Color | `#fff` |
+| Border color | `var(--color-primary-light)` |
+| Transform | `translateY(-2px) scale(1.04)` |
+| Box shadow | `var(--shadow-pop)` |
+| Duration | 500ms (class removed via JS) |
+
 **Colour variants** — the two hint buttons are functionally different (audio vs. definition), so each gets its own accent instead of sharing one purple treatment. This also reduces how purple-heavy the game screen feels.
 
-| Variant | Class | Icon | Border / text (default) | Hover background |
-|---------|-------|------|--------------------------|-------------------|
+| Variant | Class | Icon | Border / text (default) | Hover / Tapped background |
+|---------|-------|------|--------------------------|---------------------------|
 | Listen | `.fitb-hint-btn--listen` | `.icon--speaker` | `var(--color-accent-pink-dark)` on `var(--color-accent-pink)` family | `var(--color-accent-pink)` |
 | Define | `.fitb-hint-btn--define` | `.icon--search` | `var(--color-accent-blue-dark)` on `var(--color-accent-blue)` family | `var(--color-accent-blue)` |
 
 > Default-state text/border colours are the darkened `--color-accent-*-dark` variants (see §2) to keep 4.5:1 contrast on white — the raw `--color-accent-pink` / `--color-accent-blue` values are too light to pass as text.
+>
+> **Mobile tapped state:** On touch devices, the `.fitb-hint-btn--tapped` class is applied via JavaScript on `click` and removed after 500ms. This triggers the same visual effect as desktop hover (background fill, lift, shadow) so mobile users get clear feedback even with a quick tap. See §7.1 for the touch detection pattern.
 
 ### 13.7 Parts-of-Speech Colour Palette
 

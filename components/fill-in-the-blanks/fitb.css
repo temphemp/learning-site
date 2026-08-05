@@ -160,15 +160,12 @@
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   white-space: nowrap;
-  transition: all var(--transition-base);
-}
-
-.fitb-hint-btn:hover {
-  background: var(--color-primary-light);
-  color: #fff;
-  border-color: var(--color-primary-light);
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: var(--shadow-pop);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-base),
+              background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base),
+              box-shadow var(--transition-base);
 }
 
 .fitb-hint-btn:active {
@@ -179,18 +176,33 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Tapped state: applied via JS on touch devices to play the full animation
+   even when the user lifts their finger immediately. Mirrors the hover state
+   so mobile users get the same visual feedback as desktop hover. */
+.fitb-hint-btn--tapped {
+  background: var(--color-primary-light);
+  color: #fff;
+  border-color: var(--color-primary-light);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: var(--shadow-pop);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fitb-hint-btn:hover {
+    background: var(--color-primary-light);
+    color: #fff;
+    border-color: var(--color-primary-light);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: var(--shadow-pop);
+  }
+}
+
 /* Colour-coded hint variants: gives each hint a distinct identity instead of
    two identical purple buttons, and reuses accent tokens already defined
    for the part-of-speech badges (see style-guide.md §14.6). */
 .fitb-hint-btn--listen {
   border-color: var(--color-accent-pink);
   color: var(--color-accent-pink-dark);
-}
-
-.fitb-hint-btn--listen:hover {
-  background: var(--color-accent-pink);
-  border-color: var(--color-accent-pink);
-  color: #fff;
 }
 
 .fitb-hint-btn--listen:active {
@@ -204,16 +216,37 @@
   color: var(--color-accent-blue-dark);
 }
 
-.fitb-hint-btn--define:hover {
+.fitb-hint-btn--define:active {
+  background: var(--color-accent-blue-dark);
+  border-color: var(--color-accent-blue-dark);
+  color: #fff;
+}
+
+/* Tapped states for colour variants */
+.fitb-hint-btn--listen.fitb-hint-btn--tapped {
+  background: var(--color-accent-pink);
+  border-color: var(--color-accent-pink);
+  color: #fff;
+}
+
+.fitb-hint-btn--define.fitb-hint-btn--tapped {
   background: var(--color-accent-blue);
   border-color: var(--color-accent-blue);
   color: #2d3436;
 }
 
-.fitb-hint-btn--define:active {
-  background: var(--color-accent-blue-dark);
-  border-color: var(--color-accent-blue-dark);
-  color: #fff;
+@media (hover: hover) and (pointer: fine) {
+  .fitb-hint-btn--listen:hover {
+    background: var(--color-accent-pink);
+    border-color: var(--color-accent-pink);
+    color: #fff;
+  }
+
+  .fitb-hint-btn--define:hover {
+    background: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+    color: #2d3436;
+  }
 }
 
 /* ---------- Answer buttons ---------- */
@@ -249,13 +282,25 @@
   color: #fff;
   box-shadow: var(--shadow-md);
   cursor: pointer;
-  transition: all var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-base),
+              background-color var(--transition-base),
+              box-shadow var(--transition-base),
+              color var(--transition-base),
+              opacity var(--transition-base);
 }
 
-.fitb-answer-btn:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: var(--shadow-pop);
+.fitb-answer-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fitb-answer-btn:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-pop);
+  }
 }
 
 .fitb-answer-btn--correct {
@@ -308,7 +353,12 @@
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-base),
+              background-color var(--transition-base),
+              border-color var(--transition-base),
+              box-shadow var(--transition-base),
+              color var(--transition-base);
 }
 
 /* Primary action: "Continue" — filled, uses the same green as the correct-
@@ -324,12 +374,16 @@
   box-shadow: 0 4px 16px rgba(0, 206, 201, 0.35);
 }
 
-.fitb-continue-btn:hover,
 .fitb-continue-btn:focus-visible {
   background: var(--color-accent-green-dark);
   border-color: var(--color-accent-green-dark);
   box-shadow: var(--shadow-pop);
   transform: translateY(-2px) scale(1.04);
+}
+
+.fitb-continue-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--shadow-sm);
 }
 
 .fitb-continue-btn > span {
@@ -361,13 +415,36 @@
   box-shadow: none;
 }
 
-.fitb-break-btn:hover,
 .fitb-break-btn:focus-visible {
   color: var(--color-text);
   background: var(--color-bg);
   border-color: var(--color-text-muted);
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
+}
+
+.fitb-break-btn:active {
+  color: var(--color-text);
+  background: var(--color-bg);
+  border-color: var(--color-text-muted);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fitb-continue-btn:hover {
+    background: var(--color-accent-green-dark);
+    border-color: var(--color-accent-green-dark);
+    box-shadow: var(--shadow-pop);
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .fitb-break-btn:hover {
+    color: var(--color-text);
+    background: var(--color-bg);
+    border-color: var(--color-text-muted);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
 }
 
 /* ---------- Definitions modal ---------- */
@@ -528,7 +605,17 @@
   .fitb-answer-buttons--enter,
   .fitb-answer-buttons--exit,
   .fitb-round-actions--enter,
-  .fitb-progress-segment--new {
+  .fitb-progress-segment--new,
+  .fitb-word-display--incorrect,
+  .fitb-skeleton-blank,
+  .fitb-continue-btn--filling::before {
     animation: none;
+  }
+
+  .fitb-hint-btn,
+  .fitb-answer-btn,
+  .fitb-round-actions .btn,
+  .fitb-progress-segment {
+    transition: none;
   }
 }
