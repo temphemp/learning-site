@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scoreCorrectCount.textContent = correctAnswers;
     scoreTitle.textContent = band.title;
-    scoreMessage.textContent = 'You checked every word — well done!';
+    scoreMessage.textContent = 'Good job! You did it!';
 
     if (Array.isArray(band.messages) && band.messages.length) {
       scoreMessage.textContent = band.messages[Math.floor(Math.random() * band.messages.length)];
