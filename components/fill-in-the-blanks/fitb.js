@@ -24,6 +24,7 @@
  *   FITB.init({
  *     dataFile: './data-files/ending-l.json',
  *     options: ['le', 'el', 'al'],
+ *     blankCount: 3,
  *   });
  */
 
@@ -41,6 +42,8 @@ const FITB = (() => {
       wordData: null,
       /** @type {{ bands: Array<{ id: string, maxCorrect: number, sound: string | null, confetti: boolean }> } | null} */
       scoringData: null,
+      /** @type {number | null} */
+      blankCount: null,
     },
     session: {
       /** @type {boolean} */
@@ -400,7 +403,7 @@ const FITB = (() => {
 
     const wordDisplay = document.getElementById('word-display');
     if (wordDisplay) {
-      renderWordDisplay(wordDisplay, buildWordDisplay(word, 0));
+      renderWordDisplay(wordDisplay, buildWordDisplay(word, 0, null));
     }
 
     if (state.ui.advanceTimeout) {
@@ -475,7 +478,7 @@ const FITB = (() => {
     if (wordDisplay) {
       renderWordDisplay(
         wordDisplay,
-        buildWordDisplay(word, state.session.currentPrompt.hiddenLetters),
+        buildWordDisplay(word, state.session.currentPrompt.hiddenLetters, state.data.blankCount),
       );
     }
 
@@ -1093,18 +1096,51 @@ const FITB = (() => {
   /**
    * @param {string} word
    * @param {number} hiddenLetters
+   * @param {number | null} displayCount
    * @returns {string}
    */
-  function buildWordDisplay(word, hiddenLetters) {
-    const count = Math.min(Math.abs(hiddenLetters), word.length);
+  function buildWordDisplay(word, hiddenLetters, displayCount) {
+    const hiddenCount = Math.min(Math.abs(hiddenLetters), word.length);
+
+    if (displayCount !== null && displayCount !== undefined) {
+      let visibleStart = 0;
+      let visibleEnd = word.length;
+
+      if (hiddenLetters > 0) {
+        visibleStart = hiddenCount;
+      } else if (hiddenLetters < 0) {
+        visibleEnd = word.length - hiddenCount;
+      }
+
+      let html = '';
+
+      if (hiddenLetters > 0) {
+        for (let b = 0; b < displayCount; b++) {
+          html += '<span class="fitb-blank">_</span>';
+        }
+      }
+
+      for (let i = visibleStart; i < visibleEnd; i++) {
+        html += word[i];
+      }
+
+      if (hiddenLetters < 0) {
+        for (let b = 0; b < displayCount; b++) {
+          html += '<span class="fitb-blank">_</span>';
+        }
+      }
+
+      return html;
+    }
+
     let html = '';
 
     for (let i = 0; i < word.length; i++) {
       const isHidden =
         hiddenLetters > 0
-          ? i < count
+          ? i < hiddenCount
           : hiddenLetters < 0
-            ? i >= word.length - count
+            ? i >= word.length - hiddenCount
             : false;
 
       if (isHidden) {
@@ -1129,10 +1165,11 @@ const FITB = (() => {
   }
 
   /**
-   * @param {{ dataFile: string, options: string[] }} config
+   * @param {{ dataFile: string, options: string[], blankCount?: number }} config
    */
   function init(config) {
     state.data.dataFile = config.dataFile;
+    state.data.blankCount = config.blankCount ?? null;
 
     Promise.all([
       fetch(config.dataFile).then((response) => {

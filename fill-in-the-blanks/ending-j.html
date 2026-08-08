@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ending J | Fill in the Blanks</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="preload" href="../style.css" as="style" />
+        <link rel="preload" href="../components/fill-in-the-blanks/fitb.css" as="style" />
+        <link rel="preload" href="../components/learning-header.js" as="script" />
+        <link rel="preload" href="../components/fill-in-the-blanks/fitb.js" as="script" />
+        <link rel="preload" href="../components/confetti.js" as="script" />
+
+        <link rel="stylesheet" href="../style.css" />
+        <link rel="stylesheet" href="../components/fill-in-the-blanks/fitb.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="page-wrapper">
+            <learning-header
+                title="Ending /J/"
+                subtitle="Pick the right ending and complete the word!"
+                collapse-mode="collapsed-only"
+            ></learning-header>
+
+            <main class="fitb-game" aria-label="Ending J fill-in-the-blanks exercise">
+                <div class="fitb-progress" data-fitb-progress role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" aria-label="Progress"></div>
+
+                <section class="fitb-question-card" aria-label="Current word">
+                    <p id="word-display" class="fitb-word-display fitb-word-display--loading" aria-busy="true" aria-label="Loading word">
+                        <span class="fitb-skeleton-blank" aria-hidden="true">_</span>
+                        <span class="fitb-skeleton-blank" aria-hidden="true">_</span>
+                        <span class="fitb-skeleton-blank" aria-hidden="true">_</span>
+                        <span class="fitb-skeleton-blank" aria-hidden="true">_</span>
+                        <span class="fitb-skeleton-blank" aria-hidden="true">_</span>
+                    </p>
+
+                    <div class="fitb-hint-buttons">
+                        <button class="fitb-hint-btn fitb-hint-btn--listen" type="button"><span class="icon icon--speaker" aria-hidden="true"></span> say it</button>
+                        <button class="fitb-hint-btn fitb-hint-btn--define" type="button"><span class="icon icon--search" aria-hidden="true"></span> define it</button>
+                    </div>
+                </section>
+
+                <div class="fitb-answer-buttons hidden" role="group" aria-label="Answer choices">
+                    <button class="fitb-answer-btn" type="button">ge</button>
+                    <button class="fitb-answer-btn" type="button">dge</button>
+                    <button class="fitb-answer-btn" type="button">je</button>
+                </div>
+            </main>
+
+            <dialog class="app-dialog fitb-definitions-modal" aria-labelledby="fitb-definitions-title">
+                <button type="button" class="dialog-close" aria-label="Close definitions">×</button>
+                <h2 class="fitb-modal-title" id="fitb-definitions-title">Definitions</h2>
+                <div class="fitb-definitions-list"></div>
+            </dialog>
+        </div>
+
+        <script src="../components/learning-header.js" defer></script>
+        <script src="../components/confetti.js" defer></script>
+        <script src="../components/fill-in-the-blanks/fitb.js" defer></script>
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                FITB.init({
+                    dataFile: '../data-files/ending-j.json',
+                    options: ['ge', 'dge'],
+                    blankCount: 2,
+                });
+            });
+        </script>
+    </body>
+</html>

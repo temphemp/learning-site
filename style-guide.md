@@ -532,10 +532,10 @@ learning-site/
 |------|--------------|
 | `components/confetti.js` | Shared confetti effect — not FITB-specific, see §8.5 |
 | `fitb.css` | All visual styles for the game UI |
-| `fitb.js` | All reusable game logic (load JSON, generate spaced-repetition rounds, render UI, sounds, check answers, game loop, persistent stats); exposes `FITB.init({ dataFile, options })`. Loads `components/confetti.js` as a dependency (script tag must come first) |
+| `fitb.js` | All reusable game logic (load JSON, generate spaced-repetition rounds, render UI, sounds, check answers, game loop, persistent stats); exposes `FITB.init({ dataFile, options, blankCount? })`. Loads `components/confetti.js` as a dependency (script tag must come first) |
 | `data-files/<slug>.json` | Words, hidden-letter count, definitions exactly as they should appear in the modal (no answer options) |
 | `data-files/fitb-scoring.json` | Shared round-end score bands for every FITB page (see §14.11) |
-| `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tags for `confetti.js` then `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path and hardcoded `options` array. Do **not** `<link rel="preload" as="fetch">` the word JSON — `FITB.init()` fetches it on `DOMContentLoaded` after deferred scripts, so preload triggers an unused-resource warning |
+| `fill-in-the-blanks/<slug>.html` | Page shell (`learning-header`, game container, loading skeleton in `#word-display`, definitions modal shell), links to `style.css` + `fitb.css`, script tags for `confetti.js` then `fitb.js`, and a one-line `FITB.init()` call with `dataFile` path, hardcoded `options` array, and optional `blankCount`. Do **not** `<link rel="preload" as="fetch">` the word JSON — `FITB.init()` fetches it on `DOMContentLoaded` after deferred scripts, so preload triggers an unused-resource warning |
 | `static/sounds/<data-file-name>-tts/` | Pre-recorded TTS audio per word |
 
 ### 13.2 Page Init API
@@ -544,11 +544,13 @@ learning-site/
 FITB.init({
   dataFile: './data-files/ending-l.json',
   options: ['le', 'el', 'al'],
+  blankCount: 3,
 });
 ```
 
 - `dataFile` — path to the JSON word list (relative to the page).
 - `options` — fixed answer choices for that page; not stored in the JSON.
+- `blankCount` (optional) — fixed number of `_` characters to display for every word on the page. When set, blanks are appended to the end (negative `hidden-letters`) or prepended to the start (positive `hidden-letters`) of the visible portion of the word. The per-word `hidden-letters` value in the JSON still controls which letters are hidden and what the correct answer is. If omitted, each word shows `|hidden-letters|` blanks (the existing default).
 
 ### 13.3 Question Card
 
@@ -599,6 +601,8 @@ The newest segment also gets `.fitb-progress-segment--new` for one render, which
 | Blank underline | none — blanks are the `_` character only (no border or box-shadow) |
 | Blank min width | `1.4ch` per hidden letter |
 | Blank color (unfilled) | `var(--color-primary-light)` |
+
+When `blankCount` is set in `FITB.init()`, the display shows the visible portion of the word (letters not hidden by `hidden-letters`) followed by `blankCount` blank characters. The blanks are appended to the end for negative `hidden-letters` or prepended to the start for positive `hidden-letters`. The answer checking still uses the per-word `hidden-letters` value — `blankCount` only affects the visual representation.
 
 > **Layout stability:** do not add a blank underline via `border-bottom` (or any other box-model decoration). That would change the line-box height when blanks are replaced by letters on a correct answer, shrinking the question card and shifting the hint buttons.
 
